@@ -1,5 +1,6 @@
 package com.example.eldroid_teacher_side.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.DisplayProfile
 import com.example.eldroid_teacher_side.ui.components.CourseCard
 import com.example.eldroid_teacher_side.ui.components.ClassCard
@@ -30,7 +32,7 @@ import com.example.eldroid_teacher_side.ui.components.BottomBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(navController: NavController) {
     BaseScreen(
         title = "Prof. Reyes",
         subtitle = "GOOD MORNING",
@@ -46,12 +48,12 @@ fun DashboardScreen() {
             )
             Icon(
                 imageVector = Icons.Outlined.Settings,
-                contentDescription = null
+                contentDescription = null,
+                modifier = Modifier.clickable { navController.navigate("profile") }
             )
         },
         bottomBar = {
-            // Your Footer
-            BottomBar()
+            BottomBar(navController)
         }
     ) { innerPadding ->
         // Your Body
@@ -65,7 +67,7 @@ fun DashboardScreen() {
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                ClassCard()
+                ClassCard(navController)
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -89,8 +91,8 @@ fun DashboardScreen() {
                         )
                     }
 
-                    CourseCard()
-                    CourseCard()
+                    CourseCard(navController)
+                    CourseCard(navController)
                 }
             }
         }

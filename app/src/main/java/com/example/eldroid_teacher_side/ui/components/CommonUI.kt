@@ -1,6 +1,7 @@
 package com.example.eldroid_teacher_side.ui.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,78 +25,88 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.navigation.compose.currentBackStackEntryAsState
+
 @Composable
-fun BottomBar(){
+fun BottomBar(navController: NavController){
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
     BottomAppBar(
         containerColor = Color.White,
-        modifier = Modifier
-            .border(width = 1.dp, color = Color.LightGray)
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Home,
-                    modifier = Modifier.size(32.dp),
-                    tint = Color(0xFF004020),
-                    contentDescription = null
-                )
-                Text (
-                    text = "HOME",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color(0xFF004020)
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.DateRange,
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = null
-                )
-                Text (
-                    text = "SCHEDULES",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            // HOME
+            BottomTabItem(
+                label = "HOME",
+                icon = Icons.Outlined.Home,
+                isSelected = currentRoute == "dashboard",
+                onClick = { navController.navigate("dashboard") }
+            )
 
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.grad_hat),
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = null
-                )
-                Text (
-                    text = "GRADES",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Person,
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = null
-                )
-                Text (
-                    text = "PROFILE",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.ExtraBold
-                )
-            }
+            // SCHEDULES
+            BottomTabItem(
+                label = "SCHEDULES",
+                icon = Icons.Outlined.DateRange,
+                isSelected = currentRoute == "schedule",
+                onClick = { navController.navigate("schedule") }
+            )
+
+            // GRADES
+            BottomTabItem(
+                label = "GRADES",
+                painter = painterResource(R.drawable.grad_hat),
+                isSelected = currentRoute == "grades",
+                onClick = { navController.navigate("grades") }
+            )
+
+            // PROFILE
+            BottomTabItem(
+                label = "PROFILE",
+                icon = Icons.Outlined.Person,
+                isSelected = currentRoute == "profile",
+                onClick = { navController.navigate("profile") }
+            )
         }
+    }
+    }
+
+@Composable
+fun BottomTabItem(
+    label: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    painter: androidx.compose.ui.graphics.painter.Painter? = null,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val contentColor = if (isSelected) Color(0xFF004020) else Color.Gray
+
+    Column(
+        modifier = Modifier.clickable(
+            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() },
+            indication = null
+        ) { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (icon != null) {
+            Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(28.dp), tint = contentColor)
+        } else if (painter != null) {
+            Icon(painter = painter, contentDescription = null, modifier = Modifier.size(28.dp), tint = contentColor)
+        }
+
+        Text(
+            text = label,
+            fontSize = 10.sp,
+            fontWeight = if (isSelected) FontWeight.ExtraBold else FontWeight.Medium,
+            color = contentColor
+        )
     }
 }

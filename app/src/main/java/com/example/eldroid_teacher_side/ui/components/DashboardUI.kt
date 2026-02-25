@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
 
 @Composable
@@ -60,7 +61,7 @@ fun DisplayProfile(@DrawableRes imageId: Int) {
 }
 
 @Composable
-fun ClassCard() {
+fun ClassCard(navController: NavController) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -104,7 +105,7 @@ fun ClassCard() {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = { navController.navigate("attendance") },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC5A347)),
                     shape = RoundedCornerShape(16.dp)
@@ -139,7 +140,8 @@ fun ClassDetailItem(@DrawableRes imageId: Int, text: String) {
 }
 
 @Composable
-fun CourseCard() {
+fun CourseCard(navController: NavController) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth() ,
@@ -190,7 +192,9 @@ fun CourseCard() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
-                    onClick = { /* TODO */ },
+                    onClick = {
+                        navController.navigate("attendance")
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF003D1B)),
@@ -202,7 +206,9 @@ fun CourseCard() {
                 }
 
                 OutlinedButton(
-                    onClick = { /* TODO */ },
+                    onClick = {
+                        navController.navigate("grades")
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, Color(0xFF003D1B)),

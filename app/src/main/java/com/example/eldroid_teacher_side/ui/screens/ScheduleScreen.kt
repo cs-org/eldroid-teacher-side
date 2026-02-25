@@ -23,16 +23,16 @@ import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.ScheduleCard
 import com.example.eldroid_teacher_side.ui.components.WeeklyCalendarCard
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.BottomBar
 
-@Preview(showBackground = true)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ScheduleScreen(){
+fun ScheduleScreen(navController: NavController){
 
     val currentDay = java.time.LocalDate.now().dayOfWeek.name
         .lowercase()
@@ -42,7 +42,7 @@ fun ScheduleScreen(){
         title = "Faculty Schedule",
         subtitle = "Faculty Portal",
         navigationIcon = {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_left),
                     contentDescription = "Back",
@@ -52,7 +52,7 @@ fun ScheduleScreen(){
             }
         },
         bottomBar = {
-            BottomBar()
+            BottomBar(navController)
         }
     ) { innerPadding ->
         Column(

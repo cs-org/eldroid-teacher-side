@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -32,12 +33,11 @@ fun BaseScreen(
     content: @Composable (PaddingValues) -> Unit
 ){
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
-                    .border(width = 1.dp, color = Color.LightGray)
             ) {
                 Row(
                     modifier = Modifier
@@ -71,9 +71,8 @@ fun BaseScreen(
                     Row(verticalAlignment = Alignment.CenterVertically){
                         actions?.invoke(this)
                     }
+
                 }
-
-
             }
         },
         bottomBar = { bottomBar?.invoke() },

@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.AttendanceSearchBar
 import com.example.eldroid_teacher_side.ui.components.AttendanceStudentCard
 import com.example.eldroid_teacher_side.R
@@ -45,7 +46,7 @@ import com.example.eldroid_teacher_side.ui.components.BaseScreen
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AttendanceScreen() {
+fun AttendanceScreen(navController: NavController) {
 
     var searchQuery by remember { mutableStateOf("") }
     val students = listOf("Chen, Samuel", "Garcia, Maria", "Reyes, Juan")
@@ -57,7 +58,7 @@ fun AttendanceScreen() {
             Icon(
                 painter = painterResource(R.drawable.arrow_left),
                 contentDescription = "Back",
-                modifier = Modifier.size(24.dp).clickable { /* Handle back */ }
+                modifier = Modifier.size(24.dp).clickable { navController.popBackStack() }
             )
         },
         actions = {
