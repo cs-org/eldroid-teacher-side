@@ -45,7 +45,7 @@ import com.example.eldroid_teacher_side.R
 
 @Composable
 fun LoginHeader(headerText: String, subText: String) {
-    val image = painterResource(R.drawable.logo)
+    val image = painterResource(R.drawable.logo_2)
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ){

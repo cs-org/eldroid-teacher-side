@@ -23,23 +23,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.eldroid_teacher_side.ui.components.DisplayProfile
-import com.example.eldroid_teacher_side.ui.components.CourseCard
-import com.example.eldroid_teacher_side.ui.components.ClassCard
-import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.BottomBar
+import com.example.eldroid_teacher_side.ui.components.ClassCard
+import com.example.eldroid_teacher_side.ui.components.CourseCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(navController: NavController) {
     BaseScreen(
-        title = "Prof. Reyes",
-        subtitle = "GOOD MORNING",
+        title = "",
+        subtitle = "",
+        navController = navController,
 
-        navigationIcon = {
-            DisplayProfile(R.drawable.professor)
-        },
         actions = {
             Icon(
                 imageVector = Icons.Outlined.Notifications,
@@ -54,10 +50,8 @@ fun DashboardScreen(navController: NavController) {
         },
         bottomBar = {
             BottomBar(navController)
-        }
+        },
     ) { innerPadding ->
-        // Your Body
-        // Use innerPadding to ensure content isn't hidden behind the bars
         Column(
             modifier = Modifier
                 .padding(innerPadding)
