@@ -86,11 +86,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             EldroidteachersideTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        MainScreen()
-                    }
-                }
+                MainScreen()
             }
         }
     }
@@ -104,8 +100,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+//    val navBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentRoute = navBackStackEntry?.destination?.route
 
     Scaffold(
 

@@ -51,9 +51,6 @@ fun ScheduleScreen(navController: NavController){
                 )
             }
         },
-        bottomBar = {
-            BottomBar(navController)
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)

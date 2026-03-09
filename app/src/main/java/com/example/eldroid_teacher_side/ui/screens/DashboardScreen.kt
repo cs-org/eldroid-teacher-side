@@ -48,9 +48,6 @@ fun DashboardScreen(navController: NavController) {
                 modifier = Modifier.clickable { navController.navigate("profile") }
             )
         },
-        bottomBar = {
-            BottomBar(navController)
-        },
     ) { innerPadding ->
         Column(
             modifier = Modifier

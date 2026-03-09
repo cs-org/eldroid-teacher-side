@@ -49,9 +49,6 @@ fun GradeScreen(navController: NavController){
                 )
             }
         },
-        bottomBar = {
-            BottomBar(navController)
-        }
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier

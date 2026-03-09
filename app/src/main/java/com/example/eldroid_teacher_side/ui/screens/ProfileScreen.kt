@@ -62,9 +62,6 @@ fun ProfileScreen(navController: NavController){
             IconButton(onClick = { /* More options */ }) {
                 Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color(0xFF1B3D2F))
             }
-        },
-        bottomBar = {
-            BottomBar(navController)
         }
     ) { innerPadding ->
         LazyColumn(
