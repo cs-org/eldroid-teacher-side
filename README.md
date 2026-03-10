@@ -6,4 +6,5 @@ Members/Contributors:
   Galagar, John Mark H., galagarjohnmark11@gnail.com
   Lacorte, Daryl Bench P., daryllacorte20052@gmail.com
 Santerna, Andrea Loren A., andreasanterna58@gmail.com
+Mata, Beryl Paece C. , berylmata@gmail.com
   
