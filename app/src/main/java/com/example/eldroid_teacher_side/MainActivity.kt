@@ -78,6 +78,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.eldroid_teacher_side.ui.screens.AttendanceScreen
 import com.example.eldroid_teacher_side.ui.screens.LoginScreen
+import com.example.eldroid_teacher_side.ui.screens.MessageScreen
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -119,6 +120,8 @@ fun MainScreen() {
                 AttendanceScreen(navController)
             }
             composable("login") { LoginScreen(navController) }
+            composable("messages") { MessageScreen(navController)
+            }
         }
     }
 }

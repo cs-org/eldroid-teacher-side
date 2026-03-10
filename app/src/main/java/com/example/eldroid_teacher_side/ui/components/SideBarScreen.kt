@@ -75,6 +75,7 @@ fun NavigationDrawerContent(
             DrawerMenuItem("Schedules", Icons.Outlined.DateRange) { onDestinationClicked("schedule") }
             DrawerMenuItem("Grades", Icons.Outlined.Star) { onDestinationClicked("grades") }
             DrawerMenuItem("Attendance", Icons.Outlined.CheckCircle) { onDestinationClicked("attendance") }
+            DrawerMenuItem("Messages", Icons.Outlined.Email) { onDestinationClicked("messages") }
 
             Spacer(modifier = Modifier.weight(1f))
 
