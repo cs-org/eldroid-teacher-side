@@ -2,6 +2,7 @@ package com.example.eldroid_teacher_side.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -17,10 +18,11 @@ import androidx.compose.ui.unit.sp
 import com.example.eldroid_teacher_side.ui.data.ChatData
 
 @Composable
-fun MessageUI(chat: ChatData) {
+fun MessageUI(chat: ChatData, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick() }
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

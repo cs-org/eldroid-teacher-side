@@ -77,7 +77,9 @@ fun MessageScreen(navController: NavController) {
             // Direct List of Parents
             LazyColumn {
                 items(directChats.filter { it.name.contains(searchQuery, ignoreCase = true) }) { chat ->
-                    MessageUI(chat)
+                    MessageUI(chat = chat, onClick = {
+                        navController.navigate("chat_detail/${chat.name}/${chat.role}")
+                    })
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         thickness = 0.5.dp,
