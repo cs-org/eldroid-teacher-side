@@ -52,7 +52,7 @@ fun DisplayProfile(@DrawableRes imageId: Int) {
             .size(52.dp)
             .border(
                 width = 2.dp,
-                color = Color(0xFF004020),
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             )
             .clip(CircleShape),
@@ -65,7 +65,7 @@ fun ClassCard(navController: NavController) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF004020)) // Dark Green
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary)
     ) {
         Box(modifier = Modifier.padding(24.dp)) {
             Icon(
@@ -75,18 +75,18 @@ fun ClassCard(navController: NavController) {
                     .size(120.dp)
                     .align(Alignment.TopEnd)
                     .graphicsLayer(alpha = 0.1f),
-                tint = Color.White
+                tint = MaterialTheme.colorScheme.onSecondary
             )
 
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Surface(
-                    color = Color.White.copy(alpha = 0.15f),
+                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.15f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         "ONGOING NOW",
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                        color = Color(0xFFC5A347),
+                        color = MaterialTheme.colorScheme.tertiary,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -94,7 +94,7 @@ fun ClassCard(navController: NavController) {
 
                 Text(
                     text = "CS101: Computer Science I",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -107,12 +107,15 @@ fun ClassCard(navController: NavController) {
                 Button(
                     onClick = { navController.navigate("attendance") },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC5A347)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onTertiary
+                    ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(painter = painterResource(R.drawable.qr_code), contentDescription = null, tint = Color(0xFF004020), modifier = Modifier.size(28.dp))
+                    Icon(painter = painterResource(R.drawable.qr_code), contentDescription = null, modifier = Modifier.size(28.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text("Start Attendance", color = Color(0xFF004020), fontWeight = FontWeight.Bold)
+                    Text("Start Attendance", fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -128,12 +131,12 @@ fun ClassDetailItem(@DrawableRes imageId: Int, text: String) {
         Icon(
             painter = painterResource(imageId),
             contentDescription = null,
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.size(18.dp)
         )
         Text(
             text = text,
-            color = Color.White.copy(alpha = 0.9f),
+            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.9f),
             fontSize = 14.sp
         )
     }
@@ -145,8 +148,11 @@ fun CourseCard(navController: NavController) {
     Card(
         modifier = Modifier
             .fillMaxWidth() ,
-        shape = RoundedCornerShape(24.dp), // Soft rounded corners
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -162,13 +168,13 @@ fun CourseCard(navController: NavController) {
                     text = "CS202: Data Structures &\nAlgorithms",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF003D1B) // Dark green
+                        color = MaterialTheme.colorScheme.primary
                     ),
                     modifier = Modifier.weight(1f)
                 )
 
                 Surface(
-                    color = Color(0xFFF0F4F8),
+                    color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
@@ -176,7 +182,7 @@ fun CourseCard(navController: NavController) {
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF4A5568)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
@@ -197,7 +203,10 @@ fun CourseCard(navController: NavController) {
                     },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF003D1B)),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     Icon(Icons.Default.Person, contentDescription = null)
@@ -211,12 +220,12 @@ fun CourseCard(navController: NavController) {
                     },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(1.dp, Color(0xFF003D1B)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
-                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFF003D1B))
+                    Icon(Icons.Default.Star, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Spacer(Modifier.width(8.dp))
-                    Text("Grades", fontWeight = FontWeight.Bold, color = Color(0xFF003D1B))
+                    Text("Grades", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 }
             }
         }
@@ -229,14 +238,14 @@ fun InfoRow(@DrawableRes imageId: Int, text: String) {
         Icon(
             painter = painterResource(imageId),
             contentDescription = null,
-            tint = Color(0xFF718096),
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             modifier = Modifier.size(20.dp)
         )
         Spacer(Modifier.width(12.dp))
         Text(
             text = text,
             style = MaterialTheme.typography.bodyLarge,
-            color = Color(0xFF718096)
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
         )
     }
 }

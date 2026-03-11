@@ -5,5 +5,6 @@ import java.time.LocalDate
 data class CalendarDayData(
     val dayName: String,
     val dayNumber: String,
-    val fullDate: LocalDate
+    val fullDate: LocalDate,
+    val hasEvent: Boolean = false
 )
