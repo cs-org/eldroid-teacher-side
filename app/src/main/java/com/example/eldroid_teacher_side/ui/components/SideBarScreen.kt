@@ -27,7 +27,8 @@ fun NavigationDrawerContent(
     onDestinationClicked: (route: String) -> Unit
 ) {
     ModalDrawerSheet(
-        drawerContainerColor = Color.White,
+        drawerContainerColor = MaterialTheme.colorScheme.surface,
+        drawerContentColor = MaterialTheme.colorScheme.onSurface,
         drawerShape = RoundedCornerShape(topEnd = 16.dp, bottomEnd = 16.dp),
         modifier = Modifier.width(300.dp)
     ) {
@@ -49,7 +50,7 @@ fun NavigationDrawerContent(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .border(2.dp, Color(0xFF004020), CircleShape),
+                        .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape),
                     contentScale = ContentScale.Crop
                 )
 
@@ -59,16 +60,20 @@ fun NavigationDrawerContent(
                     text = "Prof. Reyes",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1B3D2F)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Text(
                     text = "Faculty ID: 2023-00154",
                     fontSize = 14.sp,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
             }
 
-            HorizontalDivider(Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+            HorizontalDivider(
+                Modifier.padding(vertical = 8.dp), 
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
+            )
 
             // Menu Items
             DrawerMenuItem("Dashboard", Icons.Outlined.Home) { onDestinationClicked("dashboard") }
@@ -93,7 +98,7 @@ fun DrawerMenuItem(
     isDestructive: Boolean = false,
     onClick: () -> Unit
 ) {
-    val color = if (isDestructive) Color.Red else Color(0xFF1B3D2F)
+    val color = if (isDestructive) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
     Row(
         modifier = Modifier
             .fillMaxWidth()

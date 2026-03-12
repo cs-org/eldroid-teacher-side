@@ -10,10 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,19 +28,29 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
-import com.example.eldroid_teacher_side.ui.components.BottomBar
 import com.example.eldroid_teacher_side.ui.components.ClassCard
 import com.example.eldroid_teacher_side.ui.components.CourseCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen(navController: NavController) {
+fun DashboardScreen(
+    navController: NavController,
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
+) {
     BaseScreen(
         title = "",
         subtitle = "",
         navController = navController,
 
         actions = {
+            IconButton(onClick = onThemeToggle) {
+                Icon(
+                    imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = "Toggle Dark/Light Mode",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             Icon(
                 imageVector = Icons.Outlined.Notifications,
                 contentDescription = null,
@@ -72,13 +86,14 @@ fun DashboardScreen(navController: NavController) {
                         Text(
                             text = "My Courses",
                             fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         Text(
                             text = "View Semester",
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF004020)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
 
@@ -89,5 +104,3 @@ fun DashboardScreen(navController: NavController) {
         }
     }
 }
-
-

@@ -1,35 +1,91 @@
 package com.example.eldroid_teacher_side.ui.components
 
-import androidx.compose.foundation.border
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Brightness2
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.NightsStay
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.MailOutline
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.eldroid_teacher_side.R
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.eldroid_teacher_side.R
+
+@Composable
+fun ThemeToggleButton(
+    isDarkMode: Boolean,
+    onThemeToggle: () -> Unit
+) {
+    val trackColor by animateColorAsState(
+        targetValue = if (isDarkMode) Color(0xFFD1D1D1) else Color(0xFFEEEEEE),
+        label = "trackColor"
+    )
+    val thumbColor by animateColorAsState(
+        targetValue = if (isDarkMode) Color(0xFF424242) else Color.White,
+        label = "thumbColor"
+    )
+    val iconColor by animateColorAsState(
+        targetValue = if (isDarkMode) Color.White else Color(0xFFFFD54F),
+        label = "iconColor"
+    )
+    val thumbOffset by animateDpAsState(
+        targetValue = if (isDarkMode) 24.dp else 0.dp,
+        label = "offset"
+    )
+
+    Box(
+        modifier = Modifier
+            .width(56.dp)
+            .height(32.dp)
+            .clip(CircleShape)
+            .background(trackColor)
+            .clickable { onThemeToggle() }
+            .padding(4.dp)
+    ) {
+        Surface(
+            modifier = Modifier
+                .offset(x = thumbOffset)
+                .size(24.dp),
+            shape = CircleShape,
+            color = thumbColor,
+            shadowElevation = 2.dp
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = if (isDarkMode) Icons.Default.NightsStay else Icons.Default.WbSunny,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(14.dp)
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun BottomBar(navController: NavController){
@@ -37,7 +93,8 @@ fun BottomBar(navController: NavController){
     val currentRoute = navBackStackEntry?.destination?.route
 
     BottomAppBar(
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Row(
             modifier = Modifier.fillMaxSize(),
@@ -87,7 +144,7 @@ fun BottomTabItem(
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val contentColor = if (isSelected) Color(0xFF004020) else Color.Gray
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
 
     Column(
         modifier = Modifier.clickable(
