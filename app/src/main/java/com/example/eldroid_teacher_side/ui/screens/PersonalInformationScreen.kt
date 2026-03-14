@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
+import com.example.eldroid_teacher_side.ui.components.EditableInfoRow
 
 @Composable
 fun PersonalInformationScreen(navController: NavController) {
@@ -307,41 +308,3 @@ fun PersonalInformationScreen(navController: NavController) {
     }
 }
 
-// Reusable component for the editable rows with icons
-@Composable
-fun EditableInfoRow(
-    icon: ImageVector,
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    iconBgColor: Color,
-    iconColor: Color,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(iconBgColor),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.dp))
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(label, fontSize = 11.sp, color = Color.Gray)
-            Spacer(modifier = Modifier.height(2.dp))
-            BasicTextField(
-                value = value,
-                onValueChange = onValueChange,
-                textStyle = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Color.Black),
-                keyboardOptions = keyboardOptions, // Passes the keyboard type down to the text field
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    }
-}

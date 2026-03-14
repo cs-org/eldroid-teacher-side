@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
+import com.example.eldroid_teacher_side.ui.components.SwitchSettingRow
 
 @Composable
 fun DepartmentSettingsScreen(navController: NavController) {
@@ -89,7 +90,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "DR",
+                                    text = "R",
                                     color = Color.White,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
@@ -102,14 +103,14 @@ fun DepartmentSettingsScreen(navController: NavController) {
                         // Text Info
                         Column {
                             Text(
-                                text = "Dr. Elena Rodriguez",
+                                text = "Prof. Reyes",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color.Black
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Senior Faculty • Computer Science",
+                                text = "Senior Faculty • Departent of Arts",
                                 fontSize = 13.sp,
                                 color = Color.Gray
                             )
@@ -171,53 +172,3 @@ fun DepartmentSettingsScreen(navController: NavController) {
     }
 }
 
-// Reusable component for the rows with switches
-@Composable
-fun SwitchSettingRow(
-    icon: ImageVector,
-    title: String,
-    iconBgColor: Color,
-    iconColor: Color,
-    isChecked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(iconBgColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.dp))
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = title,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black,
-                lineHeight = 18.sp
-            )
-        }
-
-        Switch(
-            checked = isChecked,
-            onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = Color(0xFF1B3D2F), // Dark Green
-                uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = Color.LightGray,
-                uncheckedBorderColor = Color.Transparent
-            )
-        )
-    }
-}

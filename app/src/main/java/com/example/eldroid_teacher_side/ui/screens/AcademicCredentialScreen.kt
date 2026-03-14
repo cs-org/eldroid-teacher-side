@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
+import com.example.eldroid_teacher_side.ui.components.CredentialCard
 import java.util.Calendar
 
 data class Credential(
@@ -312,44 +313,3 @@ fun AcademicCredentialScreen(navController: NavController) {
     }
 }
 
-@Composable
-fun CredentialCard(
-    credential: Credential,
-    iconBgColor: Color,
-    iconColor: Color,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        shape = RoundedCornerShape(12.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(iconBgColor),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(imageVector = if (credential.isDegree) Icons.Outlined.School else Icons.Outlined.WorkspacePremium, contentDescription = null, tint = iconColor)
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(text = credential.title, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "${credential.institution} • ${credential.year}", fontSize = 12.sp, color = Color.Gray)
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.height(48.dp)
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.Gray, modifier = Modifier.size(18.dp).clickable { onEdit() })
-                Icon(Icons.Default.DeleteOutline, contentDescription = "Delete", tint = Color.Gray, modifier = Modifier.size(18.dp).clickable { onDelete() })
-            }
-        }
-    }
-}
