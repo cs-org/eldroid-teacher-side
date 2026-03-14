@@ -46,7 +46,7 @@ fun MessageScreen(navController: NavController) {
                 )
             }
         },
-        actions = { Icon(Icons.Default.Settings, contentDescription = null) }
+        //actions = { Icon(Icons.Default.Settings, contentDescription = null) }
     ) { innerPadding ->
         Column(
             modifier = Modifier
