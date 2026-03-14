@@ -7,8 +7,8 @@ val GreenSecondary = Color(0xFF004020)
 val GoldAccent = Color(0xFFC5A347)
 
 // Dark mode variants
-val GreenPrimaryDark = Color(0xFF81C784)
-val GreenSecondaryDark = Color(0xFF66BB6A)
+val GreenPrimaryDark = Color(0xFF388E3C)
+val GreenSecondaryDark = Color(0xFF2E7D32)
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

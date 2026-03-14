@@ -81,6 +81,7 @@ fun NavigationDrawerContent(
             DrawerMenuItem("Grades", Icons.Outlined.Star) { onDestinationClicked("grades") }
             DrawerMenuItem("Attendance", Icons.Outlined.CheckCircle) { onDestinationClicked("attendance") }
             DrawerMenuItem("Messages", Icons.Outlined.Email) { onDestinationClicked("messages") }
+            DrawerMenuItem("FAQ", Icons.Outlined.Info) { onDestinationClicked("faq") }
 
             Spacer(modifier = Modifier.weight(1f))
 

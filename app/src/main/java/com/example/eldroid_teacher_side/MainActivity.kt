@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.eldroid_teacher_side.ui.screens.AttendanceScreen
 import com.example.eldroid_teacher_side.ui.screens.ChatDetailScreen
+import com.example.eldroid_teacher_side.ui.screens.FAQScreen
 import com.example.eldroid_teacher_side.ui.screens.LoginScreen
 import com.example.eldroid_teacher_side.ui.screens.MessageScreen
 import com.example.eldroid_teacher_side.ui.theme.EldroidteachersideTheme
@@ -78,6 +79,7 @@ fun MainScreen(
             }
             composable("login") { LoginScreen(navController) }
             composable("messages") { MessageScreen(navController) }
+            composable("faq") { FAQScreen(navController = navController) }
             composable("chat_detail/{name}/{role}") { backStackEntry ->
                 val name = backStackEntry.arguments?.getString("name") ?: ""
                 val role = backStackEntry.arguments?.getString("role") ?: ""
