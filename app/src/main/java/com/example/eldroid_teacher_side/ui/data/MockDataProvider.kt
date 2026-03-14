@@ -30,4 +30,23 @@ object MockDataProvider {
         ScheduleItem("MATH11", "Discrete Mathematics", "09:00 AM - 10:30 AM", "Room 101", false, LocalDate.now().plusDays(1)),
         ScheduleItem("GE105", "Ethics", "10:45 AM - 12:15 PM", "Room 205", false, LocalDate.now().plusDays(1))
     )
+
+    val faqs = listOf(
+        FAQItem(
+            question = "How do I reset my portal password?",
+            answer = "You can reset your password by clicking 'Forgot Password' on the login screen or by visiting the IT Department with your Faculty ID."
+        ),
+        FAQItem(
+            question = "How do I submit student grades?",
+            answer = "Grades can be submitted through the 'Grading' section in your dashboard. Ensure you follow the deadline set by the Registrar's Office."
+        ),
+        FAQItem(
+            question = "Where can I see my teaching schedule?",
+            answer = "Your teaching schedule is available on the Home screen under the 'Today's Schedule' section and in the 'Academic' tab."
+        ),
+        FAQItem(
+            question = "How do I request a leave of absence?",
+            answer = "Leave requests should be filed through the HR portal at least 3 days in advance for planned leaves."
+        )
+    )
 }

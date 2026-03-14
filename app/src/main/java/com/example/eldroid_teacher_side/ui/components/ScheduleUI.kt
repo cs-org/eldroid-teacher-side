@@ -29,6 +29,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -78,7 +79,7 @@ fun WeeklyCalendarCard(
             .fillMaxWidth()
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -97,14 +98,15 @@ fun WeeklyCalendarCard(
                     Icon(
                         painter = painterResource(R.drawable.k_arrow_left),
                         contentDescription = "Previous",
-                        modifier = Modifier.size(23.dp)
+                        modifier = Modifier.size(23.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
                 Text(
                     text = displayMonth,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF004020),
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable { isExpanded = !isExpanded }
                 )
 
@@ -118,7 +120,8 @@ fun WeeklyCalendarCard(
                     Icon(
                         painter = painterResource(R.drawable.k_arrow_right),
                         contentDescription = "Next",
-                        modifier = Modifier.size(23.dp)
+                        modifier = Modifier.size(23.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -145,7 +148,7 @@ fun WeeklyCalendarCard(
                             Text(
                                 text = it,
                                 fontSize = 10.sp,
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.weight(1f),
                                 textAlign = TextAlign.Center
                             )
@@ -193,23 +196,23 @@ fun CalendarDayItem(
         if (!isDimmed) {
             Text(
                 text = day.dayName,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 10.sp
             )
         }
         Spacer(Modifier.height(4.dp))
         Surface(
             shape = CircleShape,
-            color = if (isSelected) Color(0xFF004020) else Color.Transparent,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
             modifier = Modifier.size(32.dp)
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = day.dayNumber,
                     color = when {
-                        isSelected -> Color.White
-                        isDimmed -> Color.LightGray
-                        else -> Color.Black
+                        isSelected -> MaterialTheme.colorScheme.onPrimary
+                        isDimmed -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                        else -> MaterialTheme.colorScheme.onSurface
                     },
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 14.sp
@@ -222,7 +225,7 @@ fun CalendarDayItem(
                 Modifier
                     .padding(top = 2.dp)
                     .size(4.dp)
-                    .background(Color(0xFFC5A347), CircleShape)
+                    .background(MaterialTheme.colorScheme.tertiary, CircleShape)
             )
         } else {
             Spacer(Modifier.height(6.dp))
@@ -241,7 +244,7 @@ fun ScheduleCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(modifier = Modifier.height(IntrinsicSize.Min)){
@@ -250,7 +253,7 @@ fun ScheduleCard(
                     modifier = Modifier
                         .width(6.dp)
                         .fillMaxHeight()
-                        .background(Color(0xFF004020))
+                        .background(MaterialTheme.colorScheme.primary)
                 )
             }
 
@@ -261,12 +264,12 @@ fun ScheduleCard(
             ) {
                 Text(
                     text = code,
-                    color = Color(0xFFC5A347),
+                    color = MaterialTheme.colorScheme.tertiary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 12.sp
                 )
                 Text(text = name,
-                    color = Color(0xFF1B3D2F),
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
@@ -279,23 +282,23 @@ fun ScheduleCard(
                         painter = painterResource(R.drawable.clock),
                         contentDescription = null,
                         modifier = Modifier.size(14.dp),
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = " $time ",
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Icon(
                         imageVector = Icons.Outlined.Place,
                         contentDescription = null,
                         modifier = Modifier.size(14.dp),
-                        tint = Color.Gray
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = " $room ",
                         fontSize = 14.sp,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -303,7 +306,7 @@ fun ScheduleCard(
                 imageVector = Icons.Default.MoreVert,
                 contentDescription = null,
                 modifier = Modifier.padding(16.dp).size(20.dp),
-                tint = Color.LightGray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
             )
         }
     }

@@ -32,15 +32,15 @@ fun MessageUI(chat: ChatData, onClick: () -> Unit) {
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(CircleShape)
-                    .background(Color.Gray.copy(alpha = 0.2f))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
             if (chat.isOnline) {
                 Box(
                     modifier = Modifier
                         .size(14.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF4CAF50))
-                        .border(2.dp, Color.White, CircleShape)
+                        .background(Color(0xFF4CAF50)) // Keep green for online
+                        .border(2.dp, MaterialTheme.colorScheme.surface, CircleShape)
                         .align(Alignment.BottomEnd)
                 )
             }
@@ -51,12 +51,12 @@ fun MessageUI(chat: ChatData, onClick: () -> Unit) {
                 text = chat.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color(0xFF1B3D2F)
+                color = MaterialTheme.colorScheme.onSurface
             )
-            Text(text = chat.role, color = Color.Gray, fontSize = 12.sp)
+            Text(text = chat.role, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
             Text(
                 text = chat.lastMessage,
-                color = Color.DarkGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
                 fontSize = 14.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -64,17 +64,17 @@ fun MessageUI(chat: ChatData, onClick: () -> Unit) {
         }
 
         Column(horizontalAlignment = Alignment.End) {
-            Text(text = chat.time, fontSize = 11.sp, color = Color.Gray)
+            Text(text = chat.time, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             if (chat.unreadCount > 0) {
                 Surface(
-                    color = Color(0xFF004020), // Eldroid Forest Green
+                    color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape,
                     modifier = Modifier.size(22.dp).padding(top = 4.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Text(
                             text = chat.unreadCount.toString(),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )

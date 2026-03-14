@@ -7,38 +7,20 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.eldroid_teacher_side.ui.screens.AttendanceScreen
-import com.example.eldroid_teacher_side.ui.screens.DashboardScreen
-import com.example.eldroid_teacher_side.ui.screens.GradeScreen
-import com.example.eldroid_teacher_side.ui.screens.LoginScreen
-import com.example.eldroid_teacher_side.ui.screens.ProfileScreen
-import com.example.eldroid_teacher_side.ui.screens.ScheduleScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.eldroid_teacher_side.ui.screens.AcademicCredentialScreen
-import com.example.eldroid_teacher_side.ui.screens.AttendanceScreen
-import com.example.eldroid_teacher_side.ui.screens.ChangePasswordScreen
-import com.example.eldroid_teacher_side.ui.screens.ChatDetailScreen
-import com.example.eldroid_teacher_side.ui.screens.DepartmentSettingsScreen
-import com.example.eldroid_teacher_side.ui.screens.FAQScreen
-import com.example.eldroid_teacher_side.ui.screens.LoginScreen
-import com.example.eldroid_teacher_side.ui.screens.MessageScreen
-import com.example.eldroid_teacher_side.ui.screens.NotificationScreen
-import com.example.eldroid_teacher_side.ui.screens.PersonalInformationScreen
-import com.example.eldroid_teacher_side.ui.screens.SecurityPrivacyScreen
+import com.example.eldroid_teacher_side.ui.components.AnimatedBottomBar
+import com.example.eldroid_teacher_side.ui.components.BottomNavItems
+import com.example.eldroid_teacher_side.ui.screens.*
 import com.example.eldroid_teacher_side.ui.theme.EldroidteachersideTheme
 
 class MainActivity : ComponentActivity() {
@@ -67,55 +49,59 @@ fun MainScreen(
     onThemeToggle: () -> Unit
 ) {
     val navController = rememberNavController()
+    
+    // Set a very large page count for infinite scrolling
+    val infinitePageCount = Int.MAX_VALUE
+    val initialPage = (infinitePageCount / 2) - ((infinitePageCount / 2) % BottomNavItems.size) + 2 // Start at Dashboard (index 2)
+    
+    val pagerState = rememberPagerState(
+        initialPage = initialPage,
+        pageCount = { infinitePageCount }
+    )
 
-    Scaffold { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = "login",
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable("dashboard") {
-                DashboardScreen(navController, isDarkMode, onThemeToggle)
+    NavHost(
+        navController = navController,
+        startDestination = "main_content"
+    ) {
+        composable("main_content") {
+            Scaffold(
+                bottomBar = {
+                    AnimatedBottomBar(navController, pagerState)
+                }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize(),
+                        beyondViewportPageCount = 2
+                    ) { page ->
+                        val actualIndex = page % BottomNavItems.size
+                        when (BottomNavItems[actualIndex].route) {
+                            "schedule" -> ScheduleScreen(navController)
+                            "grades" -> GradeScreen(navController)
+                            "dashboard" -> DashboardScreen(navController, isDarkMode, onThemeToggle)
+                            "attendance" -> AttendanceScreen(navController)
+                            "messages" -> MessageScreen(navController)
+                        }
+                    }
+                }
             }
-            composable("schedule") { ScheduleScreen(navController) }
-            composable("grades") { GradeScreen(navController) }
-            composable("profile") { ProfileScreen(navController) }
-            composable("attendance") {
-                AttendanceScreen(navController)
-            }
-            composable("login") { LoginScreen(navController) }
-            composable("messages") { MessageScreen(navController) }
-            composable("faq") { FAQScreen(navController = navController) }
-            composable("chat_detail/{name}/{role}") { backStackEntry ->
-                val name = backStackEntry.arguments?.getString("name") ?: ""
-                val role = backStackEntry.arguments?.getString("role") ?: ""
-                ChatDetailScreen(navController, name, role)
-            }
-            composable("personal_information") {
-                PersonalInformationScreen(navController)
-            }
-            composable("academic_credential") {
-                AcademicCredentialScreen(navController)
-            }
-            composable("department_settings") {
-                DepartmentSettingsScreen(navController)
-            }
-            composable("security_privacy") {
-                SecurityPrivacyScreen(navController)
-            }
-            composable("change_password") {
-                ChangePasswordScreen(navController)
-            }
-            composable("notification") { NotificationScreen(navController) }
         }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    EldroidteachersideTheme {
-        MainScreen(isDarkMode = false, onThemeToggle = {})
+        
+        // Screens that should NOT show the Bottom Bar (Secondary Screens)
+        composable("login") { LoginScreen(navController) }
+        composable("profile") { ProfileScreen(navController) }
+        composable("personal_information") { PersonalInformationScreen(navController) }
+        composable("academic_credential") { AcademicCredentialScreen(navController) }
+        composable("department_settings") { DepartmentSettingsScreen(navController) }
+        composable("security_privacy") { SecurityPrivacyScreen(navController) }
+        composable("change_password") { ChangePasswordScreen(navController) }
+        composable("notification") { NotificationScreen(navController) }
+        composable("faq") { FAQScreen(navController = navController) }
+        composable("chat_detail/{name}/{role}") { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val role = backStackEntry.arguments?.getString("role") ?: ""
+            ChatDetailScreen(navController, name, role)
+        }
     }
 }

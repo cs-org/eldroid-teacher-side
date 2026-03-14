@@ -41,12 +41,6 @@ data class Credential(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AcademicCredentialScreen(navController: NavController) {
-    val darkGreen = Color(0xFF1B3D2F)
-    val lightGreyBg = Color(0xFFF8F9FA)
-    val goldAccent = Color(0xFFD4AF37)
-    val degreeIconBg = Color(0xFFE8EDE5)
-    val certIconBg = Color(0xFFFDF5E6)
-
     // Context for Toast messages
     val context = LocalContext.current
 
@@ -80,19 +74,19 @@ fun AcademicCredentialScreen(navController: NavController) {
     val yearsList = (1970..currentYear).toList().reversed().map { it.toString() }
 
     BaseScreen(
-        title = "Personal Information",
+        title = "Academic Credentials",
         subtitle = "Settings",
         navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = darkGreen)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         }
     ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(lightGreyBg)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
         ) {
             Column(
@@ -110,16 +104,16 @@ fun AcademicCredentialScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Academic Credentials", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = darkGreen)
+                        Text("Academic Credentials", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Manage your professional certifications and degrees", fontSize = 13.sp, color = Color.Gray, lineHeight = 18.sp)
+                        Text("Manage your professional certifications and degrees", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, lineHeight = 18.sp)
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Box(
-                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(certIconBg),
+                        modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(Icons.Outlined.School, contentDescription = null, tint = darkGreen)
+                        Icon(Icons.Outlined.School, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -129,8 +123,8 @@ fun AcademicCredentialScreen(navController: NavController) {
                 credentials.forEach { cred ->
                     CredentialCard(
                         credential = cred,
-                        iconBgColor = if (cred.isDegree) degreeIconBg else certIconBg,
-                        iconColor = if (cred.isDegree) darkGreen else goldAccent,
+                        iconBgColor = MaterialTheme.colorScheme.surfaceVariant,
+                        iconColor = if (cred.isDegree) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary,
                         onDelete = {
                             credentials = credentials.filter { it.id != cred.id }
                             Toast.makeText(context, "Credential removed", Toast.LENGTH_SHORT).show()
@@ -155,18 +149,18 @@ fun AcademicCredentialScreen(navController: NavController) {
                         .fillMaxWidth()
                         .clickable { showQuoteDialog = true },
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = darkGreen)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text("ACADEMIC PROFILE", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = goldAccent, letterSpacing = 1.sp)
-                            Icon(Icons.Default.Edit, contentDescription = "Edit Quote", tint = goldAccent, modifier = Modifier.size(14.dp))
+                            Text("ACADEMIC PROFILE", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary, letterSpacing = 1.sp)
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Quote", tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(14.dp))
                         }
                         Spacer(modifier = Modifier.height(12.dp))
                         Text(
                             text = academicQuote,
                             fontSize = 15.sp,
-                            color = Color(0xFFE0E0E0),
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
                             fontStyle = FontStyle.Italic,
                             lineHeight = 22.sp
                         )
@@ -187,8 +181,8 @@ fun AcademicCredentialScreen(navController: NavController) {
                     showCredentialDialog = true
                 },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-                containerColor = goldAccent,
-                contentColor = darkGreen,
+                containerColor = MaterialTheme.colorScheme.tertiary,
+                contentColor = MaterialTheme.colorScheme.onTertiary,
                 shape = RoundedCornerShape(24.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
@@ -312,4 +306,3 @@ fun AcademicCredentialScreen(navController: NavController) {
         )
     }
 }
-

@@ -26,6 +26,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -59,8 +60,8 @@ fun GradeDropDown(){
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
     ) {
         Row(
             modifier = Modifier
@@ -71,14 +72,14 @@ fun GradeDropDown(){
         ) {
             Text (
                 text = selectedCourse,
-                color = Color(0xFF004020),
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
             Icon(
                 painter = painterResource(R.drawable.k_arrow_down),
                 contentDescription = null,
-                tint = Color(0xFF5A6B81)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -96,23 +97,23 @@ fun GradeSummary(){
         SummaryCard(
             label = "AVG",
             value = "88.5%",
-            containerColor = Color(0xFF004020),
-            contentColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.weight(1f)
         )
         SummaryCard(
             label = "PENDING",
             value = "12",
-            containerColor = Color.White,
-            contentColor = Color(0xFF004020),
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
             hasBorder = true,
             modifier = Modifier.weight(1f)
         )
         SummaryCard(
             label = "STATUS",
             value = "DRAFT",
-            containerColor = Color(0xFFF2EFE4),
-            contentColor = Color(0xFFC5A347),
+            containerColor = MaterialTheme.colorScheme.surfaceVariant, // Using surfaceVariant as a proxy for the light gold background
+            contentColor = MaterialTheme.colorScheme.tertiary,
             modifier = Modifier.weight(1f)
         )
     }
@@ -131,7 +132,7 @@ fun SummaryCard(
         modifier = modifier.height(85.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
-        border = if (hasBorder) BorderStroke(1.dp, Color.LightGray.copy(0.5f)) else null,
+        border = if (hasBorder) BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(0.5f)) else null,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -162,24 +163,26 @@ fun StudentSearch(query: String, onQueryChange: (String) -> Unit){
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        placeholder = { Text("Search students...")},
+        placeholder = { Text("Search students...", color = MaterialTheme.colorScheme.onSurfaceVariant)},
         leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = null, tint = Color(0xFF1B3D2F))
+            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         },
         trailingIcon = {
             if(query.isNotEmpty()){
                 IconButton(onClick = { onQueryChange("") }) {
-                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                    Icon(Icons.Default.Close, contentDescription = "Clear", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         },
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF1B3D2F),
-            unfocusedBorderColor = Color.LightGray,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }
@@ -198,21 +201,21 @@ fun StudentGradeCard(
     val (textColor, bgColor) = when (status.uppercase()) {
         "ON TRACK" -> Color(0xFF2E7D32) to Color(0xFFE8F5E9)
         "NEEDS REVIEW" -> Color(0xFFF57F17) to Color(0xFFFFF8E1)
-        else -> Color.Gray to Color(0xFFF5F5F5)
+        else -> MaterialTheme.colorScheme.onSurfaceVariant to MaterialTheme.colorScheme.surfaceVariant
     }
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             // Header (Name & Status)
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Column {
-                    Text(name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF004020))
-                    Text("ID: $id", fontSize = 12.sp, color = Color.Gray)
+                    Text(name, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = MaterialTheme.colorScheme.primary)
+                    Text("ID: $id", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Surface(color = bgColor, shape = RoundedCornerShape(12.dp)) {
                     Text(status, modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -235,12 +238,12 @@ fun StudentGradeCard(
 @Composable
 fun GradeInputField(label: String, value: String, onValueChange: (String) -> Unit, modifier: Modifier) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = Color(0xFFB0BEC5))
+        Text(label, fontSize = 10.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Surface(
             modifier = Modifier.padding(top = 4.dp).fillMaxWidth().height(44.dp),
             shape = RoundedCornerShape(8.dp),
-            color = Color(0xFFF8F9FA),
-            border = BorderStroke(1.dp, Color.LightGray.copy(0.3f))
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(0.3f))
         ) {
             Box(contentAlignment = Alignment.Center) {
                 BasicTextField(
@@ -249,7 +252,7 @@ fun GradeInputField(label: String, value: String, onValueChange: (String) -> Uni
                     textStyle = TextStyle(
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF004020),
+                        color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center
                     ),
                     singleLine = true,
@@ -274,7 +277,7 @@ fun GradeBox(
             text = label,
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFFB0BEC5)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
 
         )
         Surface(
@@ -283,14 +286,14 @@ fun GradeBox(
                 .fillMaxWidth()
                 .height(44.dp),
             shape = RoundedCornerShape(8.dp),
-            color = if (isPrimary) Color(0xFFF1F4F2) else Color(0xFFF8F9FA)
+            color = if (isPrimary) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = value,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF004020)
+                    color = if (isPrimary) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
                 )
             }
         }
@@ -310,7 +313,7 @@ fun FinalizeGradesSection(onFinalizeClick: () -> Unit) {
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF004020))
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -332,7 +335,7 @@ fun FinalizeGradesSection(onFinalizeClick: () -> Unit) {
             text = "Finalizing will lock all input fields for the current term and notify students of their final standings.",
             style = TextStyle(
                 fontSize = 12.sp,
-                color = Color.Gray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 fontStyle = FontStyle.Italic
             ),

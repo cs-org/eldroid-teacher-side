@@ -17,18 +17,19 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GreenPrimaryDark,
-    secondary = GreenSecondaryDark,
+    primary = DarkPrimary,
+    secondary = DarkTextSecondary,
     tertiary = GoldAccent,
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onTertiary = Color.Black,
-    onBackground = LightGrey,
-    onSurface = LightGrey,
-    surfaceVariant = Color(0xFF2C2C2C),
-    onSurfaceVariant = LightGrey
+    background = DarkBackground,
+    surface = DarkSurface,
+    onPrimary = DarkBackground,
+    onSecondary = DarkBackground,
+    onTertiary = DarkBackground,
+    onBackground = DarkTextPrimary,
+    onSurface = DarkTextPrimary,
+    outline = DarkOutline,
+    surfaceVariant = DarkOutline,
+    onSurfaceVariant = DarkTextSecondary
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -40,8 +41,8 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,
-    onBackground = Color(0xFF1B3D2F),
-    onSurface = Color(0xFF1B3D2F),
+    onBackground = GreenPrimary,
+    onSurface = GreenPrimary,
     surfaceVariant = Color(0xFFEEEEEE),
     onSurfaceVariant = Color(0xFF444444)
 )
@@ -49,7 +50,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun EldroidteachersideTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
