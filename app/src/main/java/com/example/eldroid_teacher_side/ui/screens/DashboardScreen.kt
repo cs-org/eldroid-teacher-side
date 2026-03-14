@@ -55,6 +55,7 @@ fun DashboardScreen(
                 imageVector = Icons.Outlined.Notifications,
                 contentDescription = null,
                 modifier = Modifier.padding(end = 16.dp)
+                    .clickable { navController.navigate("notification")}
             )
             Icon(
                 imageVector = Icons.Outlined.Settings,

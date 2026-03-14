@@ -52,7 +52,7 @@ fun LoginScreen(navController: NavController) {
                 }
             )
 
-            QuickAccessSection()
+            QuickAccessSection(navController)
 
         }
         Box(modifier = Modifier.align(Alignment.BottomCenter)) {

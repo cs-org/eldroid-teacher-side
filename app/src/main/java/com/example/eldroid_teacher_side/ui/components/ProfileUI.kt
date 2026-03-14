@@ -44,7 +44,7 @@ fun SettingsCard(
     subtitle: String?,
     @DrawableRes imageId: Int,
     isDestructive: Boolean = false,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {} // Default empty lambda, ready to use!
 ) {
     val bgColor = if (isDestructive) Color(0xFFFFEBEE) else Color.White
     val contentColor = if (isDestructive) Color(0xFFD32F2F) else Color(0xFF1B3D2F)
@@ -53,7 +53,7 @@ fun SettingsCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() },
+            .clickable { onClick() }, // Click listener is properly applied here
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
@@ -63,36 +63,30 @@ fun SettingsCard(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = if (isDestructive) Color(0xFFFFCDD2) else Color(0xFFF1F4F2),
+                modifier = Modifier.size(40.dp)
             ) {
-                Surface(
-                    shape = RoundedCornerShape(8.dp),
-                    color = if (isDestructive) Color(0xFFFFCDD2) else Color(0xFFF1F4F2),
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(imageId),
-                        contentDescription = null,
-                        modifier = Modifier.padding(8.dp),
-                        tint = contentColor
-                    )
-                }
+                Icon(
+                    painter = painterResource(imageId),
+                    contentDescription = null,
+                    modifier = Modifier.padding(8.dp),
+                    tint = contentColor
+                )
+            }
 
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = contentColor)
-                    if (subtitle != null) {
-                        Text(subtitle, fontSize = 12.sp, color = Color.Gray)
-                    }
-                }
-
-                if (!isDestructive) {
-                    Icon(painter = painterResource(R.drawable.k_arrow_right), contentDescription = null, tint = Color.LightGray)
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = contentColor)
+                if (subtitle != null) {
+                    Text(subtitle, fontSize = 12.sp, color = Color.Gray)
                 }
             }
-        }
 
+            if (!isDestructive) {
+                Icon(painter = painterResource(R.drawable.k_arrow_right), contentDescription = null, tint = Color.LightGray)
+            }
+        }
     }
 }
