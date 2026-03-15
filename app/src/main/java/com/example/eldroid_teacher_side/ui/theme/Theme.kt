@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -22,14 +23,20 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = GoldAccent,
     background = DarkBackground,
     surface = DarkSurface,
-    onPrimary = DarkBackground,
-    onSecondary = DarkBackground,
-    onTertiary = DarkBackground,
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.Black,
     onBackground = DarkTextPrimary,
     onSurface = DarkTextPrimary,
     outline = DarkOutline,
     surfaceVariant = DarkOutline,
-    onSurfaceVariant = DarkTextSecondary
+    onSurfaceVariant = DarkTextSecondary,
+    primaryContainer = Color(0xFF1B3D2F),
+    onPrimaryContainer = Color(0xFFE7F0EB),
+    secondaryContainer = Color(0xFF004020),
+    onSecondaryContainer = Color(0xFFD0E8DC),
+    tertiaryContainer = Color(0xFF3E351A),
+    onTertiaryContainer = GoldAccent
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -44,7 +51,13 @@ private val LightColorScheme = lightColorScheme(
     onBackground = GreenPrimary,
     onSurface = GreenPrimary,
     surfaceVariant = Color(0xFFEEEEEE),
-    onSurfaceVariant = Color(0xFF444444)
+    onSurfaceVariant = Color(0xFF444444),
+    primaryContainer = Color(0xFFE7F0EB), // Light green derived from primary
+    onPrimaryContainer = GreenPrimary,
+    secondaryContainer = Color(0xFFD0E8DC),
+    onSecondaryContainer = GreenSecondary,
+    tertiaryContainer = Color(0xFFFBF3D9), // Light gold
+    onTertiaryContainer = GoldAccent
 )
 
 @Composable
@@ -74,7 +87,12 @@ fun EldroidteachersideTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+        typography = Typography
+    ) {
+        // Global Surface to apply background color to the entire app
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            content = content
+        )
+    }
 }

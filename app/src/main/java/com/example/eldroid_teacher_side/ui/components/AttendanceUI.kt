@@ -79,8 +79,8 @@ fun AttendanceCalendarHeader(){
                 onClick = { },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = MaterialTheme.colorScheme.primary, // Changed to Primary
+                    contentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
@@ -88,14 +88,14 @@ fun AttendanceCalendarHeader(){
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp)
                 )
 
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "Mark All Present",
-                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -231,9 +231,9 @@ fun AttendanceStudentCard(
                     modifier = Modifier.padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StatusButton("P", selectedStatus == "P") { onStatusChange("P") }
-                    StatusButton("L", selectedStatus == "L") { onStatusChange("L") }
-                    StatusButton("A", selectedStatus == "A") { onStatusChange("A") }
+                    StatusButton("P", selectedStatus == "P", Color(0xFF4CAF50)) { onStatusChange("P") }
+                    StatusButton("L", selectedStatus == "L", Color(0xFFFFC107)) { onStatusChange("L") }
+                    StatusButton("A", selectedStatus == "A", Color(0xFFF44336)) { onStatusChange("A") }
                 }
             }
         }
@@ -241,19 +241,19 @@ fun AttendanceStudentCard(
 }
 
 @Composable
-fun StatusButton(label: String, isSelected: Boolean, onClick: () -> Unit){
+fun StatusButton(label: String, isSelected: Boolean, selectedColor: Color, onClick: () -> Unit){
     Surface(
         modifier = Modifier
             .width(40.dp)
             .fillMaxHeight()
             .clickable { onClick() },
-        color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
+        color = if (isSelected) selectedColor else Color.Transparent,
         shape = RoundedCornerShape(6.dp)
     ){
         Box(contentAlignment = Alignment.Center){
             Text (
                 text = label,
-                color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )

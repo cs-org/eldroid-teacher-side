@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Description
@@ -13,9 +12,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Schedule
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.SpanStyle
@@ -39,28 +36,26 @@ data class NotificationItemData(
     val iconColor: Color,
     val isUnread: Boolean,
     val category: String, // "TODAY" or "EARLIER"
-    val messageContent: @Composable () -> Unit // Using a composable so we can easily bold specific words
+    val messageContent: @Composable () -> Unit
 )
 
 @Composable
 fun NotificationScreen(navController: NavController) {
-    val darkGreen = Color(0xFF1B3D2F)
-    val readBgColor = Color.White
-    val unreadBgColor = Color(0xFFF4FAF6) // Very light green tint
-    val unreadDotColor = Color(0xFF00C853) // Bright green
+    val unreadBgColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+    val unreadDotColor = MaterialTheme.colorScheme.primary
 
-    // Icon Colors
-    val yellowBg = Color(0xFFFFF4E5)
-    val yellowIcon = Color(0xFFE6A020)
+    // Standardized palette colors
+    val greenBg = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+    val greenIcon = MaterialTheme.colorScheme.primary
 
-    val redBg = Color(0xFFFFEBEE)
-    val redIcon = Color(0xFFD32F2F)
+    val orangeBg = Color(0xFFFFF4E5)
+    val orangeIcon = Color(0xFFE6A020)
 
-    val blueBg = Color(0xFFE3F2FD)
-    val blueIcon = Color(0xFF1976D2)
+    val redBg = MaterialTheme.colorScheme.errorContainer
+    val redIcon = MaterialTheme.colorScheme.error
 
-    val grayBg = Color(0xFFF5F5F5)
-    val grayIcon = Color(0xFF616161)
+    val grayBg = MaterialTheme.colorScheme.surfaceVariant
+    val grayIcon = MaterialTheme.colorScheme.onSurfaceVariant
 
     // State holding our list of notifications
     var notifications by remember {
@@ -71,20 +66,20 @@ fun NotificationScreen(navController: NavController) {
                     title = "Academic Deadline",
                     time = "2h ago",
                     icon = Icons.Outlined.Schedule,
-                    iconBgColor = yellowBg,
-                    iconColor = yellowIcon,
-                    isUnread = true, // Starts unread
+                    iconBgColor = orangeBg,
+                    iconColor = orangeIcon,
+                    isUnread = true,
                     category = "TODAY",
                     messageContent = {
                         Text(
                             buildAnnotatedString {
                                 append("Grade submission deadline for ")
-                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = darkGreen)) {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)) {
                                     append("CS101")
                                 }
                                 append(" is in 2 hours.")
                             },
-                            fontSize = 13.sp, color = Color.DarkGray, lineHeight = 18.sp
+                            fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 18.sp
                         )
                     }
                 ),
@@ -95,17 +90,17 @@ fun NotificationScreen(navController: NavController) {
                     icon = Icons.Outlined.ErrorOutline,
                     iconBgColor = redBg,
                     iconColor = redIcon,
-                    isUnread = true, // Starts unread
+                    isUnread = true,
                     category = "TODAY",
                     messageContent = {
                         Text(
                             buildAnnotatedString {
-                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = Color.DarkGray)) {
+                                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)) {
                                     append("3 students")
                                 }
                                 append(" in your Data Structures class are at risk of failing. Check analytics for details.")
                             },
-                            fontSize = 13.sp, color = Color.DarkGray, lineHeight = 18.sp
+                            fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 18.sp
                         )
                     }
                 ),
@@ -114,14 +109,14 @@ fun NotificationScreen(navController: NavController) {
                     title = "Administrative Memo",
                     time = "Yesterday",
                     icon = Icons.Outlined.Description,
-                    iconBgColor = blueBg,
-                    iconColor = blueIcon,
-                    isUnread = false, // Already read
+                    iconBgColor = greenBg,
+                    iconColor = greenIcon,
+                    isUnread = false,
                     category = "EARLIER",
                     messageContent = {
                         Text(
                             "New memo from the Dean regarding the upcoming faculty meeting in October.",
-                            fontSize = 13.sp, color = Color.DarkGray, lineHeight = 18.sp
+                            fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 18.sp
                         )
                     }
                 ),
@@ -132,12 +127,12 @@ fun NotificationScreen(navController: NavController) {
                     icon = Icons.Outlined.Lock,
                     iconBgColor = grayBg,
                     iconColor = grayIcon,
-                    isUnread = false, // Already read
+                    isUnread = false,
                     category = "EARLIER",
                     messageContent = {
                         Text(
                             "Security alert: New login detected from iPhone 14 Pro in Manila, PH.",
-                            fontSize = 13.sp, color = Color.DarkGray, lineHeight = 18.sp
+                            fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface, lineHeight = 18.sp
                         )
                     }
                 )
@@ -147,24 +142,22 @@ fun NotificationScreen(navController: NavController) {
 
     BaseScreen(
         title = "Notifications",
-        subtitle = "Stay updated", // Or leave empty if you prefer
+        subtitle = "Stay updated",
         navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = darkGreen)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },
         actions = {
-            // THE SIMULATION: Mark all as read button
             TextButton(
                 onClick = {
-                    // Update the state: change all notifications to isUnread = false
                     notifications = notifications.map { it.copy(isUnread = false) }
                 }
             ) {
                 Text(
                     text = "Mark all as read",
-                    color = Color(0xFF2E7D32), // Darkish green
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp
                 )
@@ -174,43 +167,35 @@ fun NotificationScreen(navController: NavController) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
         ) {
-            // Filter categories
             val todayNotifications = notifications.filter { it.category == "TODAY" }
             val earlierNotifications = notifications.filter { it.category == "EARLIER" }
 
-            // TODAY SECTION
             if (todayNotifications.isNotEmpty()) {
-                item {
-                    SectionHeaderTitle("TODAY")
-                }
+                item { SectionHeaderTitle("TODAY") }
                 items(todayNotifications) { notification ->
                     NotificationRow(
                         notification = notification,
-                        bgColor = if (notification.isUnread) unreadBgColor else readBgColor,
+                        bgColor = if (notification.isUnread) unreadBgColor else MaterialTheme.colorScheme.surface,
                         unreadDotColor = unreadDotColor
                     )
-                    HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
                 }
             }
 
-            // EARLIER SECTION
             if (earlierNotifications.isNotEmpty()) {
-                item {
-                    SectionHeaderTitle("EARLIER")
-                }
+                item { SectionHeaderTitle("EARLIER") }
                 items(earlierNotifications) { notification ->
                     NotificationRow(
                         notification = notification,
-                        bgColor = if (notification.isUnread) unreadBgColor else readBgColor,
+                        bgColor = if (notification.isUnread) unreadBgColor else MaterialTheme.colorScheme.surface,
                         unreadDotColor = unreadDotColor
                     )
-                    HorizontalDivider(color = Color(0xFFF0F0F0), thickness = 1.dp)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
                 }
             }
         }
     }
 }
-

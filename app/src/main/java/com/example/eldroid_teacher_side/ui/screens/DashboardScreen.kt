@@ -1,6 +1,5 @@
 package com.example.eldroid_teacher_side.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -24,7 +23,9 @@ import com.example.eldroid_teacher_side.ui.components.CourseCard
 fun DashboardScreen(
     navController: NavController,
     isDarkMode: Boolean,
-    onThemeToggle: () -> Unit
+    onThemeToggle: () -> Unit,
+    onNavigateToAttendance: () -> Unit,
+    onNavigateToGrades: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -74,7 +75,7 @@ fun DashboardScreen(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            ClassCard(navController)
+            ClassCard(onAttendanceClick = onNavigateToAttendance)
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -101,8 +102,14 @@ fun DashboardScreen(
                     )
                 }
 
-                CourseCard(navController)
-                CourseCard(navController)
+                CourseCard(
+                    onAttendanceClick = onNavigateToAttendance,
+                    onGradesClick = onNavigateToGrades
+                )
+                CourseCard(
+                    onAttendanceClick = onNavigateToAttendance,
+                    onGradesClick = onNavigateToGrades
+                )
             }
         }
     }

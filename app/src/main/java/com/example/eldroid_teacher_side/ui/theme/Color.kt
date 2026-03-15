@@ -7,13 +7,13 @@ val GreenPrimary = Color(0xFF1B3D2F)
 val GreenSecondary = Color(0xFF004020)
 val GoldAccent = Color(0xFFC5A347)
 
-// New Dark Mode Palette
-val DarkBackground = Color(0xFF0B0F0B)
-val DarkSurface = Color(0xFF161B16)
-val DarkPrimary = Color(0xFF72CC96)
-val DarkTextPrimary = Color(0xFFE0E4E0)
-val DarkTextSecondary = Color(0xFF949E94)
-val DarkOutline = Color(0xFF2D352D)
+// Midnight Green Dark Mode Palette
+val DarkBackground = Color(0xFF040704)
+val DarkSurface = Color(0xFF0D120D)
+val DarkPrimary = Color(0xFF2E7D32)
+val DarkTextPrimary = Color(0xFFF2F5F2)
+val DarkTextSecondary = Color(0xFF7A8B85)
+val DarkOutline = Color(0xFF1B241B)
 
 // Helper Colors
 val LightGrey = Color(0xFFD1D1D1)

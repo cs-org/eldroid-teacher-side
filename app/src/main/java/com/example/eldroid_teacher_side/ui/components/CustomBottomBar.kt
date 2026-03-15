@@ -64,17 +64,6 @@ fun AnimatedBottomBar(
             }
         }
 
-        // Handle the wrap-around for the floating bubble
-        // When progress goes beyond itemCount - 1, we want it to wrap back to 0
-        val displayProgress = if (currentProgress >= itemCount - 0.5f && pagerState.currentPageOffsetFraction > 0.5f) {
-             // As we swipe past the last item, the bubble should appear to come from the left or head to the right
-             currentProgress
-        } else {
-            currentProgress
-        }
-        
-        // We calculate floatingX based on modded progress. 
-        // Note: (currentProgress % itemCount) handles the wrap-around visually.
         val floatingX = itemWidth * ((currentProgress % itemCount) + 0.5f)
 
         // Main Navigation Bar Surface
@@ -83,7 +72,7 @@ fun AnimatedBottomBar(
                 .fillMaxWidth()
                 .height(70.dp),
             shape = RoundedCornerShape(35.dp),
-            color = MaterialTheme.colorScheme.surface,
+            color = MaterialTheme.colorScheme.surface, // Explicitly use surface color from theme
             tonalElevation = 8.dp,
             shadowElevation = 8.dp
         ) {
@@ -132,6 +121,7 @@ fun AnimatedBottomBar(
                             Icon(
                                 imageVector = item.icon,
                                 contentDescription = item.label,
+                                // Using onSurfaceVariant from theme for inactive state
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
                                     .size(26.dp)
@@ -175,6 +165,7 @@ fun AnimatedBottomBar(
                     Icon(
                         imageVector = item.icon,
                         contentDescription = null,
+                        // Use onPrimary from theme for the floating icon
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier
                             .size(32.dp)

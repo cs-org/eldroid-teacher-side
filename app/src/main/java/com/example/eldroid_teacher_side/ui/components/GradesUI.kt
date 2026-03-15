@@ -286,14 +286,14 @@ fun GradeBox(
                 .fillMaxWidth()
                 .height(44.dp),
             shape = RoundedCornerShape(8.dp),
-            color = if (isPrimary) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            color = if (isPrimary) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Text(
                     text = value,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (isPrimary) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurface
+                    color = if (isPrimary) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             }
         }

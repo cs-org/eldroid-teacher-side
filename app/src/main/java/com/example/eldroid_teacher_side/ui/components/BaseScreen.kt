@@ -25,44 +25,51 @@ fun BaseScreen(
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         topBar = {
             if (title.isNotEmpty() || subtitle.isNotEmpty()) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.surface
+                    color = MaterialTheme.colorScheme.surface,
+                    tonalElevation = 3.dp
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 12.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (navigationIcon != null) {
-                                navigationIcon()
-                            }
-                            Spacer(Modifier.width(if (navigationIcon != null) 16.dp else 0.dp))
+                    Column {
+                        // Spacer for status bar/camera cutout
+                        Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                        
+                        Row(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 12.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (navigationIcon != null) {
+                                    navigationIcon()
+                                }
+                                Spacer(Modifier.width(if (navigationIcon != null) 16.dp else 0.dp))
 
-                            Column {
-                                Text(
-                                    text = title,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Text(
-                                    text = subtitle,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 1.sp
-                                )
+                                Column {
+                                    Text(
+                                        text = title,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = subtitle,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        letterSpacing = 1.sp
+                                    )
+                                }
                             }
-                        }
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            actions?.invoke(this)
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                actions?.invoke(this)
+                            }
                         }
                     }
                 }
@@ -75,6 +82,7 @@ fun BaseScreen(
                 AnimatedBottomBar(navController, pagerState)
             }
         },
+        contentWindowInsets = WindowInsets.systemBars,
         content = { padding ->
             content(padding)
         }

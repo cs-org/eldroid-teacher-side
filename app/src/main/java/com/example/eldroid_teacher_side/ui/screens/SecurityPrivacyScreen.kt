@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.ChevronRight
 import androidx.compose.material.icons.outlined.DesktopMac
 import androidx.compose.material.icons.outlined.Fingerprint
@@ -20,14 +19,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.DeviceRow
 import com.example.eldroid_teacher_side.ui.components.SecurityToggleRow
 import kotlinx.coroutines.launch
@@ -42,11 +39,6 @@ data class Device(
 
 @Composable
 fun SecurityPrivacyScreen(navController: NavController) {
-    // Custom Toggle Colors (keeping these as they seem to be specific brand/functional colors, 
-    // but ensured they work with theme surfaces)
-    val toggleTrackYellow = Color(0xFFEAB345)
-    val toggleThumbBlue = Color(0xFF2180D8)
-
     // States for functional switches
     var tfaEnabled by remember { mutableStateOf(true) }
     var biometricEnabled by remember { mutableStateOf(true) }
@@ -66,21 +58,25 @@ fun SecurityPrivacyScreen(navController: NavController) {
     }
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         snackbarHost = { SnackbarHost(snackbarHostState) }, // Enables snackbars
         topBar = {
-            // Rebuilding just the top bar part since we are using Scaffold for the snackbar
             Surface(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    Column {
-                        Text("Security & Privacy", color = MaterialTheme.colorScheme.primary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                        Text("Manage your account security", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                Column {
+                    // Spacer for status bar/camera cutout
+                    Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
+                        }
+                        Spacer(Modifier.width(16.dp))
+                        Column {
+                            Text("Security & Privacy", color = MaterialTheme.colorScheme.primary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Text("Manage your account security", color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.sp)
+                        }
                     }
                 }
             }
@@ -95,10 +91,7 @@ fun SecurityPrivacyScreen(navController: NavController) {
             ) {
                 OutlinedButton(
                     onClick = {
-                        // THE SIMULATION: Remove all inactive devices!
                         devices = devices.filter { it.isActive }
-
-                        // Show a success message!
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar("Signed out of all other devices successfully.")
                         }
@@ -111,7 +104,8 @@ fun SecurityPrivacyScreen(navController: NavController) {
                     Text("Sign out from all devices", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                 }
             }
-        }
+        },
+        contentWindowInsets = WindowInsets.systemBars
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -166,8 +160,8 @@ fun SecurityPrivacyScreen(navController: NavController) {
                         iconColor = MaterialTheme.colorScheme.primary,
                         isChecked = tfaEnabled,
                         onCheckedChange = { tfaEnabled = it },
-                        trackColor = toggleTrackYellow,
-                        thumbColor = toggleThumbBlue
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                        thumbColor = MaterialTheme.colorScheme.primary
                     )
 
                     HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
@@ -179,8 +173,8 @@ fun SecurityPrivacyScreen(navController: NavController) {
                         iconColor = MaterialTheme.colorScheme.primary,
                         isChecked = biometricEnabled,
                         onCheckedChange = { biometricEnabled = it },
-                        trackColor = toggleTrackYellow,
-                        thumbColor = toggleThumbBlue
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                        thumbColor = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -204,7 +198,6 @@ fun SecurityPrivacyScreen(navController: NavController) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column {
-                    // Dynamic Device List Loop
                     devices.forEachIndexed { index, device ->
                         DeviceRow(
                             icon = device.icon,
@@ -213,20 +206,17 @@ fun SecurityPrivacyScreen(navController: NavController) {
                             title = device.title,
                             subtitle = device.subtitle,
                             statusText = if (device.isActive) "ACTIVE NOW" else null,
-                            statusColor = if (device.isActive) Color(0xFF2E7D32) else Color.Transparent
+                            statusColor = if (device.isActive) MaterialTheme.colorScheme.primary else Color.Transparent
                         )
 
-                        // Add divider unless it's the very last item in the whole card
                         if (index < devices.size - 1 || devices.size <= 2) {
                             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f), thickness = 1.dp)
                         }
                     }
 
-                    // View all history button (Only show if we haven't expanded the list yet)
                     if (devices.size <= 2) {
                         TextButton(
                             onClick = {
-                                // THE SIMULATION: Load more older devices!
                                 devices = devices + listOf(
                                     Device("iPad Pro", "Cebu City, Philippines • 5 days ago", Icons.Outlined.Smartphone, false),
                                     Device("Windows PC", "Makati, Philippines • 2 weeks ago", Icons.Outlined.DesktopMac, false)
@@ -240,7 +230,7 @@ fun SecurityPrivacyScreen(navController: NavController) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(80.dp)) // Extra padding so scroll clears the bottom bar
+            Spacer(modifier = Modifier.height(80.dp))
         }
     }
 }

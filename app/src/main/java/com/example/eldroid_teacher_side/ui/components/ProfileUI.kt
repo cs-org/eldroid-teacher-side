@@ -48,7 +48,7 @@ fun SettingsCard(
     onClick: () -> Unit = {} // Default empty lambda, ready to use!
 ) {
     val bgColor = if (isDestructive) {
-        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.2f)
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.15f)
     } else {
         MaterialTheme.colorScheme.surface
     }
@@ -63,11 +63,11 @@ fun SettingsCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-            .clickable { onClick() }, // Click listener is properly applied here
+            .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = bgColor),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
-        border = if (isDestructive) BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.2f)) else null
+        elevation = if (isDestructive) CardDefaults.cardElevation(defaultElevation = 0.dp) else CardDefaults.cardElevation(defaultElevation = 0.5.dp),
+        border = if (isDestructive) BorderStroke(1.dp, MaterialTheme.colorScheme.error.copy(alpha = 0.5f)) else null
     ) {
         Row(
             modifier = Modifier.padding(16.dp).fillMaxWidth(),
@@ -76,7 +76,7 @@ fun SettingsCard(
             Surface(
                 shape = RoundedCornerShape(8.dp),
                 color = if (isDestructive) {
-                    MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f)
+                    Color.Transparent // Removed the inner box background for destructive
                 } else {
                     MaterialTheme.colorScheme.surfaceVariant
                 },

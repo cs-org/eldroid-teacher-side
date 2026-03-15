@@ -44,7 +44,7 @@ fun AttendanceScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "FACULTY PORTAL",
+                    text = "Faculty Portal",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,

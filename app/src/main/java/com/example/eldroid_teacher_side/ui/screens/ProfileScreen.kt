@@ -56,7 +56,10 @@ import com.example.eldroid_teacher_side.ui.components.SettingsCard
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 
 @Composable
-fun ProfileScreen(navController: NavController){
+fun ProfileScreen(
+    navController: NavController,
+    onLogout: () -> Unit
+){
     // Context needed to launch the share sheet
     val context = LocalContext.current
 
@@ -226,11 +229,7 @@ fun ProfileScreen(navController: NavController){
                     imageId = R.drawable.logout,
                     isDestructive = true,
                     onClick = {
-                        navController.navigate("login") {
-                            popUpTo(navController.graph.startDestinationId){
-                                inclusive = true
-                            }
-                        }
+                        onLogout()
                     }
                 )
             }
