@@ -8,3 +8,7 @@ Members/Contributors:
 Santerna, Andrea Loren A., andreasanterna58@gmail.com
 Mata, Beryl Paece C. , berylmata@gmail.com
   
+QA Documentation Requisite:
+        In MSWord go to View then Web Layout for a pageless presentation.
+
+    
