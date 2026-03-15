@@ -2,6 +2,7 @@ package com.example.eldroid_teacher_side.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.*
 import androidx.compose.ui.text.font.FontWeight
+import com.example.eldroid_teacher_side.ui.data.MockDataProvider
 
 @Composable
 fun GradeScreen(
@@ -25,11 +27,12 @@ fun GradeScreen(
     onOpenDrawer: () -> Unit
 ){
     var searchQuery by remember { mutableStateOf("") }
-    var midtermJulianne by remember { mutableStateOf("92") }
-    var finalsJulianne by remember { mutableStateOf("") }
-
-    var midtermLorenzo by remember { mutableStateOf("78") }
-    var finalsLorenzo by remember { mutableStateOf("") }
+    var selectedCourse by remember { mutableStateOf("CS202 - Data Structures") }
+    
+    val allStudents = MockDataProvider.courseStudents[selectedCourse] ?: emptyList()
+    val filteredStudents = allStudents.filter {
+        it.name.contains(searchQuery, ignoreCase = true) || it.id.contains(searchQuery, ignoreCase = true)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header
@@ -89,7 +92,12 @@ fun GradeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            item { GradeDropDown() }
+            item { 
+                GradeDropDown(
+                    selectedCourse = selectedCourse,
+                    onCourseSelected = { selectedCourse = it }
+                ) 
+            }
             item { GradeSummary() }
             item {
                 StudentSearch(
@@ -97,30 +105,23 @@ fun GradeScreen(
                     onQueryChange = { searchQuery = it }
                 )
             }
-            item {
+            
+            items(filteredStudents) { student ->
+                var midterm by remember(student.id, selectedCourse) { mutableStateOf(student.midterm) }
+                var finals by remember(student.id, selectedCourse) { mutableStateOf(student.finals) }
+                
                 StudentGradeCard(
-                    name = "Abad, Julianne Marie",
-                    id = "2021-00124",
-                    midtermValue = midtermJulianne,
-                    onMidtermChange = { midtermJulianne = it },
-                    finalsValue = finalsJulianne,
-                    onFinalsChange = { finalsJulianne = it },
-                    currentValue = "92.0",
-                    status = "ON TRACK"
+                    name = student.name,
+                    id = student.id,
+                    midtermValue = midterm,
+                    onMidtermChange = { midterm = it },
+                    finalsValue = finals,
+                    onFinalsChange = { finals = it },
+                    currentValue = if (midterm.isNotEmpty()) midterm else "0.0",
+                    status = student.status
                 )
             }
-            item {
-                StudentGradeCard(
-                    name = "Bautista, Lorenzo",
-                    id = "2021-00156",
-                    midtermValue = midtermLorenzo,
-                    onMidtermChange = { midtermLorenzo = it },
-                    finalsValue = finalsLorenzo,
-                    onFinalsChange = { finalsLorenzo = it },
-                    currentValue = "78.0",
-                    status = "NEEDS REVIEW"
-                )
-            }
+
             item {
                 Spacer(Modifier.height(16.dp))
                 FinalizeGradesSection(onFinalizeClick = { })

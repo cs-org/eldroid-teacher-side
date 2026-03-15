@@ -15,11 +15,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
 
 @Composable
-fun ClassCard(onAttendanceClick: () -> Unit) {
+fun ClassCard(
+    code: String,
+    name: String,
+    room: String,
+    time: String,
+    onAttendanceClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -51,14 +56,14 @@ fun ClassCard(onAttendanceClick: () -> Unit) {
                 }
 
                 Text(
-                    text = "CS101: Computer Science I",
+                    text = "$code: $name",
                     color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                ClassDetailItem(R.drawable.apartment, "Room RM 402 • Engineering Bldg")
-                ClassDetailItem(R.drawable.clock, "09:00 AM - 10:30 AM")
+                ClassDetailItem(R.drawable.apartment, room)
+                ClassDetailItem(R.drawable.clock, time)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -99,7 +104,15 @@ fun ClassDetailItem(iconId: Int, text: String) {
 }
 
 @Composable
-fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
+fun CourseCard(
+    code: String,
+    name: String,
+    time: String,
+    room: String,
+    days: String,
+    onAttendanceClick: () -> Unit,
+    onGradesClick: () -> Unit
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -120,7 +133,7 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
                 verticalAlignment = Alignment.Top
             ) {
                 Text(
-                    text = "CS202: Data Structures &\nAlgorithms",
+                    text = "$code: $name",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -133,7 +146,7 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
-                        text = "MWF",
+                        text = days,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Bold,
@@ -144,8 +157,8 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                InfoRow(R.drawable.clock, text = "01:00 PM - 02:30 PM")
-                InfoRow(R.drawable.apartment, text = "Lab 3 • IT Building")
+                InfoRow(R.drawable.clock, text = time)
+                InfoRow(R.drawable.apartment, text = room)
             }
 
             Row(

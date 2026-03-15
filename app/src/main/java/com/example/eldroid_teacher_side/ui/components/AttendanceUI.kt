@@ -105,9 +105,10 @@ fun AttendanceCalendarHeader(){
 
 @Composable
 fun DateTime(date: DateModel){
-    val backgroundColor = if (date.isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val contentcolor = if (date.isToday) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-    val borderColor = if (date.isToday) MaterialTheme.colorScheme.tertiary else Color.Transparent
+    // Highlight green if it's today
+    val backgroundColor = if (date.isToday) Color(0xFF4CAF50) else MaterialTheme.colorScheme.surfaceVariant
+    val contentcolor = if (date.isToday) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+    val borderColor = if (date.isToday) Color(0xFF388E3C) else Color.Transparent
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

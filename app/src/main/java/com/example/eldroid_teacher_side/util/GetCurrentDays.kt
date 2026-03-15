@@ -16,10 +16,9 @@ data class DateModel(
 fun getCurrentWeekDays(): List<DateModel> {
     val today = LocalDate.now()
 
-    val monday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-
-    return (0..4).map { i ->
-        val date = monday.plusDays(i.toLong())
+    // Generate a window of 5 days with 'today' in the center (index 2)
+    return (-2..2).map { i ->
+        val date = today.plusDays(i.toLong())
         DateModel(
             dayName = date.dayOfWeek.name.take(3), // e.g., "MON"
             dayNumber = date.dayOfMonth.toString(),
@@ -27,4 +26,3 @@ fun getCurrentWeekDays(): List<DateModel> {
         )
     }
 }
-

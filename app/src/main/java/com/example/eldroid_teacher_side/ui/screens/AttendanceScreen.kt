@@ -25,6 +25,8 @@ import com.example.eldroid_teacher_side.ui.components.AttendanceSearchBar
 import com.example.eldroid_teacher_side.ui.components.AttendanceStudentCard
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.AttendanceCalendarHeader
+import com.example.eldroid_teacher_side.ui.components.GradeDropDown
+import com.example.eldroid_teacher_side.ui.data.MockDataProvider
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -35,7 +37,12 @@ fun AttendanceScreen(
     onOpenDrawer: () -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    val students = listOf("Chen, Samuel", "Garcia, Maria", "Reyes, Juan")
+    var selectedCourse by remember { mutableStateOf("CS202 - Data Structures") }
+    
+    val allStudents = MockDataProvider.courseStudents[selectedCourse] ?: emptyList()
+    val filteredStudents = allStudents.filter { 
+        it.name.contains(searchQuery, ignoreCase = true) || it.id.contains(searchQuery, ignoreCase = true)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header
@@ -90,37 +97,10 @@ fun AttendanceScreen(
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Surface(
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.graduate),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = "CS202",
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-        }
+        GradeDropDown(
+            selectedCourse = selectedCourse,
+            onCourseSelected = { selectedCourse = it }
+        )
 
         AttendanceCalendarHeader()
         AttendanceSearchBar(
@@ -129,7 +109,7 @@ fun AttendanceScreen(
         )
 
         Text(
-            text = "STUDENT LIST (${students.size})",
+            text = "STUDENT LIST (${filteredStudents.size})",
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -138,12 +118,12 @@ fun AttendanceScreen(
         )
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(students) { student ->
-                var status by remember { mutableStateOf("P") }
+            items(filteredStudents) { student ->
+                var status by remember(student.id, selectedCourse) { mutableStateOf("P") }
                 AttendanceStudentCard(
-                    name = student,
-                    studentId = "2023CS092",
-                    imageRes = R.drawable.boy,
+                    name = student.name,
+                    studentId = student.id,
+                    imageRes = student.imageRes,
                     selectedStatus = status,
                     onStatusChange = { status = it }
                 )

@@ -1,5 +1,7 @@
 package com.example.eldroid_teacher_side.ui.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -18,7 +21,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ClassCard
 import com.example.eldroid_teacher_side.ui.components.CourseCard
+import com.example.eldroid_teacher_side.ui.data.MockDataProvider
+import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DashboardScreen(
     navController: NavController,
@@ -28,6 +34,15 @@ fun DashboardScreen(
     onNavigateToGrades: () -> Unit,
     onOpenDrawer: () -> Unit
 ) {
+    val ongoingClass = remember {
+        MockDataProvider.schedules.find { it.isActive && it.date.isEqual(LocalDate.now()) }
+    }
+    
+    val otherCourses = remember {
+        MockDataProvider.schedules.filter { it != ongoingClass }
+            .distinctBy { it.code }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,7 +94,15 @@ fun DashboardScreen(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            ClassCard(onAttendanceClick = onNavigateToAttendance)
+            ongoingClass?.let {
+                ClassCard(
+                    code = it.code,
+                    name = it.name,
+                    room = it.room,
+                    time = it.time,
+                    onAttendanceClick = onNavigateToAttendance
+                )
+            }
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -98,22 +121,19 @@ fun DashboardScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Text(
-                        text = "View Semester",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
                 }
 
-                CourseCard(
-                    onAttendanceClick = onNavigateToAttendance,
-                    onGradesClick = onNavigateToGrades
-                )
-                CourseCard(
-                    onAttendanceClick = onNavigateToAttendance,
-                    onGradesClick = onNavigateToGrades
-                )
+                otherCourses.forEach { course ->
+                    CourseCard(
+                        code = course.code,
+                        name = course.name,
+                        time = course.time,
+                        room = course.room,
+                        days = course.days,
+                        onAttendanceClick = onNavigateToAttendance,
+                        onGradesClick = onNavigateToGrades
+                    )
+                }
             }
         }
     }
