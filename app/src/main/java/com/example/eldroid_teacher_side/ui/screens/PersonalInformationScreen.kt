@@ -47,12 +47,6 @@ import com.example.eldroid_teacher_side.ui.components.EditableInfoRow
 
 @Composable
 fun PersonalInformationScreen(navController: NavController) {
-    // Colors based on your UI
-    val darkGreen = Color(0xFF1B3D2F)
-    val lightGreyBg = Color(0xFFF8F9FA)
-    val goldAccent = Color(0xFFD4AF37)
-    val iconBgColor = Color(0xFFE8EBE9)
-
     // Get context for the Toast
     val context = LocalContext.current
 
@@ -75,7 +69,7 @@ fun PersonalInformationScreen(navController: NavController) {
         navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = darkGreen)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },
         actions = {
@@ -83,14 +77,14 @@ fun PersonalInformationScreen(navController: NavController) {
                 // Trigger Toast from top bar checkmark
                 Toast.makeText(context, "Personal information saved successfully!", Toast.LENGTH_SHORT).show()
             }) {
-                Icon(Icons.Default.Check, contentDescription = "Save", tint = darkGreen)
+                Icon(Icons.Default.Check, contentDescription = "Save", tint = MaterialTheme.colorScheme.primary)
             }
         },
         bottomBar = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -103,16 +97,17 @@ fun PersonalInformationScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxWidth(0.7f)
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = darkGreen),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     shape = RoundedCornerShape(25.dp)
                 ) {
                     Icon(
                         painter = painterResource(android.R.drawable.ic_menu_save),
                         contentDescription = "Save",
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
+                        tint = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Save Changes", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Text("Save Changes", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onPrimary)
                 }
             }
         }
@@ -120,7 +115,7 @@ fun PersonalInformationScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(lightGreyBg)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState()),
@@ -131,7 +126,7 @@ fun PersonalInformationScreen(navController: NavController) {
             // 1. PROFILE AVATAR CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -145,7 +140,8 @@ fun PersonalInformationScreen(navController: NavController) {
                         Surface(
                             shape = CircleShape,
                             modifier = Modifier.size(100.dp),
-                            border = BorderStroke(3.dp, goldAccent)
+                            border = BorderStroke(3.dp, MaterialTheme.colorScheme.tertiary),
+                            color = MaterialTheme.colorScheme.surface
                         ) {
                             if (selectedImageUri != null) {
                                 AsyncImage(
@@ -167,7 +163,7 @@ fun PersonalInformationScreen(navController: NavController) {
                         // Camera Edit Icon
                         Surface(
                             shape = CircleShape,
-                            color = darkGreen,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier
                                 .size(28.dp)
                                 .offset(x = (-4).dp, y = (-4).dp)
@@ -176,19 +172,19 @@ fun PersonalInformationScreen(navController: NavController) {
                                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                     )
                                 },
-                            border = BorderStroke(2.dp, Color.White)
+                            border = BorderStroke(2.dp, MaterialTheme.colorScheme.surface)
                         ) {
                             Icon(
                                 Icons.Outlined.CameraAlt,
                                 contentDescription = "Edit Picture",
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.padding(4.dp)
                             )
                         }
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    Text(fullName, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = darkGreen)
-                    Text("Senior Faculty Member", fontSize = 13.sp, color = Color.Gray)
+                    Text(fullName, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                    Text("Senior Faculty Member", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
 
@@ -197,17 +193,17 @@ fun PersonalInformationScreen(navController: NavController) {
             // 2. FULL NAME CARD (Editable)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("Full Name", fontSize = 11.sp, color = Color.Gray)
+                    Text("Full Name", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Spacer(modifier = Modifier.height(4.dp))
                     BasicTextField(
                         value = fullName,
                         onValueChange = { fullName = it },
-                        textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium, color = Color.Black),
+                        textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurface),
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
@@ -218,7 +214,7 @@ fun PersonalInformationScreen(navController: NavController) {
             // 3. FACULTY ID (Read-Only styling)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFFF2F4F3)), // Slightly darker grey
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)), // Slightly different from surface
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -230,11 +226,11 @@ fun PersonalInformationScreen(navController: NavController) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Faculty ID", fontSize = 11.sp, color = Color.Gray)
+                        Text("Faculty ID", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("2023-00154", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = darkGreen)
+                        Text("2023-00154", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                     }
-                    Icon(Icons.Default.Lock, contentDescription = "Locked", tint = goldAccent, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Default.Lock, contentDescription = "Locked", tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -243,12 +239,12 @@ fun PersonalInformationScreen(navController: NavController) {
             // 4. CONTACT DETAILS CARD (Editable)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("CONTACT DETAILS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = goldAccent)
+                    Text("CONTACT DETAILS", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
                     Spacer(modifier = Modifier.height(16.dp))
 
                     // Email Row
@@ -257,8 +253,8 @@ fun PersonalInformationScreen(navController: NavController) {
                         label = "Email Address",
                         value = email,
                         onValueChange = { email = it },
-                        iconBgColor = iconBgColor,
-                        iconColor = darkGreen,
+                        iconBgColor = MaterialTheme.colorScheme.surfaceVariant,
+                        iconColor = MaterialTheme.colorScheme.primary,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                     )
 
@@ -275,8 +271,8 @@ fun PersonalInformationScreen(navController: NavController) {
                                 phone = newValue
                             }
                         },
-                        iconBgColor = iconBgColor,
-                        iconColor = darkGreen,
+                        iconBgColor = MaterialTheme.colorScheme.surfaceVariant,
+                        iconColor = MaterialTheme.colorScheme.primary,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number) // Opens number pad
                     )
                 }
@@ -287,7 +283,7 @@ fun PersonalInformationScreen(navController: NavController) {
             // 5. HOME ADDRESS CARD (Editable)
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -297,8 +293,8 @@ fun PersonalInformationScreen(navController: NavController) {
                         label = "Home Address",
                         value = address,
                         onValueChange = { address = it },
-                        iconBgColor = iconBgColor,
-                        iconColor = darkGreen
+                        iconBgColor = MaterialTheme.colorScheme.surfaceVariant,
+                        iconColor = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -307,4 +303,3 @@ fun PersonalInformationScreen(navController: NavController) {
         }
     }
 }
-

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,22 +43,30 @@ fun PasswordInputField(
             text = label,
             fontSize = 13.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1B3D2F), // Dark Green
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.padding(bottom = 6.dp)
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
-                .background(Color.White, RoundedCornerShape(8.dp))
-                .border(1.dp, Color(0xFFE0E0E0), RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                    shape = RoundedCornerShape(8.dp)
+                )
                 .padding(horizontal = 16.dp),
             contentAlignment = Alignment.CenterStart
         ) {
             BasicTextField(
                 value = value,
                 onValueChange = onValueChange,
-                textStyle = TextStyle(fontSize = 16.sp, color = Color.Black, letterSpacing = 2.sp),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    letterSpacing = 2.sp
+                ),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth()
@@ -68,19 +77,20 @@ fun PasswordInputField(
 
 // Reusable Dynamic Requirement Row
 @Composable
-fun RequirementRow(text: String, isMet: Boolean, darkGreen: Color) {
+fun RequirementRow(text: String, isMet: Boolean) {
+    val colorScheme = MaterialTheme.colorScheme
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
             imageVector = if (isMet) Icons.Default.CheckCircle else Icons.Outlined.RadioButtonUnchecked,
             contentDescription = null,
-            tint = if (isMet) darkGreen else Color(0xFFD0D0D0),
+            tint = if (isMet) colorScheme.primary else colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = text,
             fontSize = 12.sp,
-            color = if (isMet) Color.DarkGray else Color.Gray
+            color = if (isMet) colorScheme.onSurface else colorScheme.onSurfaceVariant
         )
     }
 }

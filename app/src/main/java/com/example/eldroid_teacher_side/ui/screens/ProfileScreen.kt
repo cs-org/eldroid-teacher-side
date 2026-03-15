@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +56,10 @@ import com.example.eldroid_teacher_side.ui.components.SettingsCard
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 
 @Composable
-fun ProfileScreen(navController: NavController){
+fun ProfileScreen(
+    navController: NavController,
+    onLogout: () -> Unit
+){
     // Context needed to launch the share sheet
     val context = LocalContext.current
 
@@ -75,12 +79,13 @@ fun ProfileScreen(navController: NavController){
     BaseScreen(
         title = "Faculty Profile",
         subtitle = "Teacher Settings",
+        navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_left),
                     contentDescription = "Back",
-                    tint = Color(0xFF004020),
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -90,7 +95,7 @@ fun ProfileScreen(navController: NavController){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFFF8F9FA)) // Light grey background like image
+                .background(MaterialTheme.colorScheme.background) // Use theme background
                 .padding(innerPadding),
             contentPadding = PaddingValues(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -102,8 +107,9 @@ fun ProfileScreen(navController: NavController){
                     Surface(
                         shape = CircleShape,
                         modifier = Modifier.size(120.dp),
-                        border = BorderStroke(4.dp, Color.White),
-                        shadowElevation = 4.dp
+                        border = BorderStroke(4.dp, MaterialTheme.colorScheme.surface),
+                        shadowElevation = 4.dp,
+                        color = MaterialTheme.colorScheme.surface
                     ) {
                         // Conditionally render the selected image or the default drawable
                         if (selectedImageUri != null) {
@@ -124,7 +130,7 @@ fun ProfileScreen(navController: NavController){
                     }
                     Surface(
                         shape = CircleShape,
-                        color = Color(0xFF1B3D2F),
+                        color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .size(32.dp)
                             .offset(x = (-4).dp, y = (-4).dp)
@@ -134,16 +140,16 @@ fun ProfileScreen(navController: NavController){
                                     PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                 )
                             },
-                        border = BorderStroke(2.dp, Color.White)
+                        border = BorderStroke(2.dp, MaterialTheme.colorScheme.surface)
                     ) {
-                        Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.padding(6.dp))
+                        Icon(Icons.Default.Edit, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(6.dp))
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Prof. Reyes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color(0xFF1B3D2F))
-                Text("Senior Lecturer, Department of Arts", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
-                Text("Faculty ID: 2023-00154", fontSize = 13.sp, color = Color.Gray)
+                Text("Prof. Reyes", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Text("Senior Lecturer, Department of Arts", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary)
+                Text("Faculty ID: 2023-00154", fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
@@ -154,16 +160,16 @@ fun ProfileScreen(navController: NavController){
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1B3D2F)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Edit Profile", fontWeight = FontWeight.Bold)
+                        Text("Edit Profile", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary)
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Surface(
                         modifier = Modifier.size(48.dp),
                         shape = RoundedCornerShape(8.dp),
-                        color = Color(0xFFE0E0E0),
+                        color = MaterialTheme.colorScheme.surfaceVariant,
                         onClick = {
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
@@ -187,7 +193,7 @@ fun ProfileScreen(navController: NavController){
                             context.startActivity(chooser)
                         }
                     ) {
-                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.padding(12.dp), tint = Color.DarkGray)
+                        Icon(Icons.Default.Share, contentDescription = null, modifier = Modifier.padding(12.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
                 Spacer(modifier = Modifier.height(24.dp))
@@ -206,9 +212,13 @@ fun ProfileScreen(navController: NavController){
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-            item { SectionHeader("SECURITY") }
+            item { SectionHeader("HELP & SECURITY") }
             item {
                 SettingsCard("Security & Privacy", "Password, 2FA, Session management", R.drawable.security, onClick = { navController.navigate("security_privacy")})
+            }
+            item {
+                // Moved FAQ to Profile/Settings screen
+                SettingsCard("FAQs", "Frequently Asked Questions", R.drawable.ic_launcher_foreground, onClick = { navController.navigate("faq")})
             }
 
             item {
@@ -219,19 +229,15 @@ fun ProfileScreen(navController: NavController){
                     imageId = R.drawable.logout,
                     isDestructive = true,
                     onClick = {
-                        navController.navigate("login") {
-                            popUpTo(navController.graph.startDestinationId){
-                                inclusive = true
-                            }
-                        }
+                        onLogout()
                     }
                 )
             }
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("App Version 2.4.0", fontSize = 12.sp, color = Color.Gray)
-                Text("© Colegio de Alicia Institutional Portal", fontSize = 12.sp, color = Color.Gray)
+                Text("App Version 2.4.0", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text("© Colegio de Alicia Institutional Portal", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }

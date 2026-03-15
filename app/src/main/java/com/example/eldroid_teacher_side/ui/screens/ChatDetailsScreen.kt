@@ -5,18 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -28,26 +17,8 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,8 +29,7 @@ import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ChatBubble
 import com.example.eldroid_teacher_side.ui.data.MessageData
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +64,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
             sheetState = sheetState,
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(
                 modifier = Modifier
@@ -105,12 +75,13 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                     "Select Attachment",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.dp),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 ListItem(
                     headlineContent = { Text("Photos & Videos") },
-                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = Color(0xFF1B3D2F)) },
+                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                     modifier = Modifier.clickable {
                         showSheet = false
                         filePickerLauncher.launch("image/*")
@@ -118,7 +89,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 )
                 ListItem(
                     headlineContent = { Text("Documents & Files") },
-                    leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = Color(0xFF1B3D2F)) },
+                    leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                     modifier = Modifier.clickable {
                         showSheet = false
                         filePickerLauncher.launch("application/pdf") // or "*/*" for all files
@@ -134,28 +105,37 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 title = {
                     Column {
                         Text(parentName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text(parentRole, fontSize = 12.sp, color = Color.Gray)
+                        Text(parentRole, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
         },
         bottomBar = {
-            Surface(tonalElevation = 2.dp) {
+            Surface(
+                tonalElevation = 2.dp,
+                color = MaterialTheme.colorScheme.surface
+            ) {
                 Row(
                     modifier = Modifier
                         .padding(12.dp)
                         .fillMaxWidth()
+                        .navigationBarsPadding()
                         .imePadding(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Open the Bottom Sheet instead of direct launch
                     IconButton(onClick = { showSheet = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Attach", tint = Color.Gray)
+                        Icon(Icons.Default.Add, contentDescription = "Attach", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
 
                     OutlinedTextField(
@@ -167,10 +147,12 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                             .padding(horizontal = 8.dp),
                         shape = RoundedCornerShape(24.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color(0xFFF5F5F5),
-                            focusedContainerColor = Color(0xFFF5F5F5),
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                             unfocusedBorderColor = Color.Transparent,
-                            focusedBorderColor = Color.Transparent
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface
                         )
                     )
 
@@ -182,8 +164,8 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                                 textState = ""
                             }
                         },
-                        containerColor = Color(0xFF1B3D2F),
-                        contentColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         shape = CircleShape,
                         modifier = Modifier.size(48.dp)
                     ) {
@@ -198,7 +180,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .background(Color(0xFFFDFDFD)),
+                .background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -207,9 +189,9 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                     Text(
                         "TODAY",
                         fontSize = 10.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
-                            .background(Color(0xFFF0F0F0), RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                             .padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }

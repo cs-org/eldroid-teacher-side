@@ -30,6 +30,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
@@ -56,7 +57,7 @@ fun AttendanceCalendarHeader(){
     Card(
         modifier = Modifier.fillMaxWidth().padding(16.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -77,21 +78,24 @@ fun AttendanceCalendarHeader(){
             Button(
                 onClick = { },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE8F0EA)),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary, // Changed to Primary
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(1.dp, Color(0xFF1B3D2F).copy(alpha = 0.1f))
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
             ){
                 Icon(
                     imageVector = Icons.Default.Done,
                     contentDescription = null,
-                    tint = Color(0xFF1B3D2F),
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(20.dp)
                 )
 
                 Spacer(Modifier.width(8.dp))
                 Text(
                     text = "Mark All Present",
-                    color = Color(0xFF1B3D2F),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -101,9 +105,9 @@ fun AttendanceCalendarHeader(){
 
 @Composable
 fun DateTime(date: DateModel){
-    val backgroundColor = if (date.isToday) Color(0xFF1B3D2F) else Color(0xFFF3F6F9)
-    val contentcolor = if (date.isToday) Color.White else Color(0xFF5A6B81)
-    val borderColor = if (date.isToday) Color(0xFFC5A347) else Color.Transparent
+    val backgroundColor = if (date.isToday) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val contentcolor = if (date.isToday) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    val borderColor = if (date.isToday) MaterialTheme.colorScheme.tertiary else Color.Transparent
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -145,24 +149,26 @@ fun AttendanceSearchBar(query: String, onQueryChange: (String) -> Unit){
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        placeholder = { Text("Search student name or ID...")},
+        placeholder = { Text("Search student name or ID...", color = MaterialTheme.colorScheme.onSurfaceVariant)},
         leadingIcon = {
-            Icon(Icons.Default.Search, contentDescription = null, tint = Color(0xFF1B3D2F))
+            Icon(Icons.Default.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
         },
         trailingIcon = {
             if(query.isNotEmpty()){
                 IconButton(onClick = { onQueryChange("") }) {
-                    Icon(Icons.Default.Close, contentDescription = "Clear")
+                    Icon(Icons.Default.Close, contentDescription = "Clear", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         },
         shape = RoundedCornerShape(12.dp),
         singleLine = true,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFF1B3D2F),
-            unfocusedBorderColor = Color.LightGray,
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
         )
     )
 }
@@ -180,7 +186,7 @@ fun AttendanceStudentCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 6.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -195,7 +201,7 @@ fun AttendanceStudentCard(
                 modifier = Modifier
                     .size(50.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFE0E0E0)),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                 contentScale = ContentScale.Crop
             )
 
@@ -206,18 +212,18 @@ fun AttendanceStudentCard(
                     text = name,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = Color(0xFF1B3D2F)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
                     text = "ID $studentId",
                     fontSize = 14.sp,
-                    color = Color(0xFF5A6B81)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
             Surface(
-                color = Color(0xFFF3F6F9),
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier.height(45.dp)
             ) {
@@ -225,9 +231,9 @@ fun AttendanceStudentCard(
                     modifier = Modifier.padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    StatusButton("P", selectedStatus == "P") { onStatusChange("P") }
-                    StatusButton("L", selectedStatus == "L") { onStatusChange("L") }
-                    StatusButton("A", selectedStatus == "A") { onStatusChange("A") }
+                    StatusButton("P", selectedStatus == "P", Color(0xFF4CAF50)) { onStatusChange("P") }
+                    StatusButton("L", selectedStatus == "L", Color(0xFFFFC107)) { onStatusChange("L") }
+                    StatusButton("A", selectedStatus == "A", Color(0xFFF44336)) { onStatusChange("A") }
                 }
             }
         }
@@ -235,19 +241,19 @@ fun AttendanceStudentCard(
 }
 
 @Composable
-fun StatusButton(label: String, isSelected: Boolean, onClick: () -> Unit){
+fun StatusButton(label: String, isSelected: Boolean, selectedColor: Color, onClick: () -> Unit){
     Surface(
         modifier = Modifier
             .width(40.dp)
             .fillMaxHeight()
             .clickable { onClick() },
-        color = if (isSelected) Color(0xFF2D5A47) else Color.Transparent,
+        color = if (isSelected) selectedColor else Color.Transparent,
         shape = RoundedCornerShape(6.dp)
     ){
         Box(contentAlignment = Alignment.Center){
             Text (
                 text = label,
-                color = if (isSelected) Color.White else Color(0xFF5A6B81),
+                color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp
             )

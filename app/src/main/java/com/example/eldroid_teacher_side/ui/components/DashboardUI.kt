@@ -1,41 +1,16 @@
 package com.example.eldroid_teacher_side.ui.components
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,24 +19,7 @@ import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
 
 @Composable
-fun DisplayProfile(@DrawableRes imageId: Int) {
-    Image(
-        painter = painterResource(imageId),
-        contentDescription = "Profile Picture",
-        modifier = Modifier
-            .size(52.dp)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = CircleShape
-            )
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop
-    )
-}
-
-@Composable
-fun ClassCard(navController: NavController) {
+fun ClassCard(onAttendanceClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -105,7 +63,7 @@ fun ClassCard(navController: NavController) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Button(
-                    onClick = { navController.navigate("attendance") },
+                    onClick = onAttendanceClick,
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary,
@@ -123,37 +81,34 @@ fun ClassCard(navController: NavController) {
 }
 
 @Composable
-fun ClassDetailItem(@DrawableRes imageId: Int, text: String) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+fun ClassDetailItem(iconId: Int, text: String) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = painterResource(imageId),
+            painter = painterResource(id = iconId),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSecondary,
-            modifier = Modifier.size(18.dp)
+            modifier = Modifier.size(16.dp),
+            tint = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f)
         )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.9f),
+            color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f),
             fontSize = 14.sp
         )
     }
 }
 
 @Composable
-fun CourseCard(navController: NavController) {
-
+fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth() ,
+        modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
             contentColor = MaterialTheme.colorScheme.onSurface
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Column(
             modifier = Modifier.padding(24.dp),
@@ -198,9 +153,7 @@ fun CourseCard(navController: NavController) {
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Button(
-                    onClick = {
-                        navController.navigate("attendance")
-                    },
+                    onClick = onAttendanceClick,
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -215,9 +168,7 @@ fun CourseCard(navController: NavController) {
                 }
 
                 OutlinedButton(
-                    onClick = {
-                        navController.navigate("grades")
-                    },
+                    onClick = onGradesClick,
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
@@ -233,19 +184,19 @@ fun CourseCard(navController: NavController) {
 }
 
 @Composable
-fun InfoRow(@DrawableRes imageId: Int, text: String) {
+fun InfoRow(iconId: Int, text: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Icon(
-            painter = painterResource(imageId),
+            painter = painterResource(id = iconId),
             contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            modifier = Modifier.size(20.dp)
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontSize = 14.sp
         )
     }
 }

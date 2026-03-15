@@ -156,13 +156,12 @@ fun LoginForm(
 
 @Composable
 fun ForgotPasswordButton(onForgotClick: () -> Unit) {
-    val onForgotClick = null
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterEnd
     ) {
-        TextButton(onClick = { onForgotClick }) {
+        TextButton(onClick = onForgotClick) {
             Text(
                 text = "Forgot Password?",
                 color = Color(0xFF004020),
@@ -204,7 +203,7 @@ fun LoginActionButton(onClick: () -> Unit) {
 
 
 @Composable
-fun QuickAccessSection(navController: NavController) {
+fun QuickAccessSection(onBiometricClick: () -> Unit) {
 
     Column (
         modifier = Modifier
@@ -222,7 +221,10 @@ fun QuickAccessSection(navController: NavController) {
                 color = Color.LightGray
             )
             Text(
-                text = "Quick Access"
+                text = "Quick Access",
+                modifier = Modifier.padding(horizontal = 8.dp),
+                color = Color.Gray,
+                fontSize = 12.sp
             )
 
             HorizontalDivider(
@@ -248,13 +250,13 @@ fun QuickAccessSection(navController: NavController) {
                         )
                     )
                 }
+                .clickable { onBiometricClick() }
         ) {
             Icon(
                 painter = painterResource(R.drawable.fingerprint),
                 contentDescription = "Biometric Login",
                 tint = Color(0xFF004020),
                 modifier = Modifier.size(52.dp)
-                    .clickable{ navController.navigate("dashboard")}
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -266,7 +268,8 @@ fun QuickAccessSection(navController: NavController) {
 
         Text(
             text = "Biometric Authentication",
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            color = Color.Gray
         )
     }
 }

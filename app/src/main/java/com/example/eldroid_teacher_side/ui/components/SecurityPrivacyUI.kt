@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -49,7 +50,7 @@ fun SecurityToggleRow(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(22.dp))
             Spacer(modifier = Modifier.width(16.dp))
-            Text(text = title, fontSize = 14.sp, color = Color.Black)
+            Text(text = title, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface)
         }
 
         Switch(
@@ -58,8 +59,8 @@ fun SecurityToggleRow(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = thumbColor,
                 checkedTrackColor = trackColor,
-                uncheckedThumbColor = Color.White,
-                uncheckedTrackColor = Color.LightGray,
+                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
                 uncheckedBorderColor = Color.Transparent
             ),
             thumbContent = if (isChecked) {
@@ -94,9 +95,9 @@ fun DeviceRow(
             }
             Spacer(modifier = Modifier.width(16.dp))
             Column {
-                Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                Text(text = title, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text = subtitle, fontSize = 12.sp, color = Color.Gray)
+                Text(text = subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 

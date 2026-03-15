@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.eldroid_teacher_side.ui.data.MessageData
@@ -22,7 +22,7 @@ fun ChatBubble(message: MessageData) {
         horizontalAlignment = if (message.isFromMe) Alignment.End else Alignment.Start
     ) {
         Surface(
-            color = if (message.isFromMe) Color(0xFF2D4B3B) else Color(0xFFF5F2F0),
+            color = if (message.isFromMe) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
             shape = RoundedCornerShape(
                 topStart = 16.dp,
                 topEnd = 16.dp,
@@ -34,14 +34,14 @@ fun ChatBubble(message: MessageData) {
             Text(
                 text = message.content,
                 modifier = Modifier.padding(12.dp),
-                color = if (message.isFromMe) Color.White else Color.Black,
+                color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
         Text(
             text = message.time,
             fontSize = 10.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             modifier = Modifier.padding(top = 4.dp)
         )
     }

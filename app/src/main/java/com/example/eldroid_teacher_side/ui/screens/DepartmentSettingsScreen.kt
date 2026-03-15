@@ -29,12 +29,6 @@ import com.example.eldroid_teacher_side.ui.components.SwitchSettingRow
 
 @Composable
 fun DepartmentSettingsScreen(navController: NavController) {
-    // Colors based on your UI
-    val darkGreen = Color(0xFF1B3D2F)
-    val lightGreyBg = Color(0xFFF8F9FA)
-    val lightGreenIconBg = Color(0xFFEDF5F0) // Soft green for the icon background
-    val beigeAccent = Color(0xFFFDF6E9) // Decorative circle color
-
     // State for the functional switches
     var receiveNotifications by remember { mutableStateOf(true) }
     var makeOfficeHoursPublic by remember { mutableStateOf(true) }
@@ -45,14 +39,14 @@ fun DepartmentSettingsScreen(navController: NavController) {
         navController = navController,
         navigationIcon = {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = darkGreen)
+                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(lightGreyBg)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
@@ -62,15 +56,16 @@ fun DepartmentSettingsScreen(navController: NavController) {
             // 1. PROFILE CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
-                    // Decorative beige circle at the top right
+                    val tertiaryColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
+                    // Decorative circle
                     Canvas(modifier = Modifier.matchParentSize()) {
                         drawCircle(
-                            color = beigeAccent,
+                            color = tertiaryColor,
                             radius = 120f,
                             center = Offset(size.width, 0f) // Top Right Corner
                         )
@@ -85,13 +80,13 @@ fun DepartmentSettingsScreen(navController: NavController) {
                         // Avatar
                         Surface(
                             shape = CircleShape,
-                            color = darkGreen,
+                            color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(56.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = "R",
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
                                 )
@@ -106,13 +101,13 @@ fun DepartmentSettingsScreen(navController: NavController) {
                                 text = "Prof. Reyes",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.Black
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Senior Faculty • Departent of Arts",
+                                text = "Senior Faculty • Department of Arts",
                                 fontSize = 13.sp,
-                                color = Color.Gray
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -126,7 +121,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
                 text = "NOTIFICATIONS & PRIVACY",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color(0xFF8DA09B), // Light grayish green
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                 letterSpacing = 1.sp,
                 modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
             )
@@ -134,7 +129,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
             // 3. SETTINGS GROUP CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -143,15 +138,15 @@ fun DepartmentSettingsScreen(navController: NavController) {
                     SwitchSettingRow(
                         icon = Icons.Default.Notifications,
                         title = "Receive Department\nNotifications",
-                        iconBgColor = lightGreenIconBg,
-                        iconColor = darkGreen,
+                        iconBgColor = MaterialTheme.colorScheme.primaryContainer,
+                        iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         isChecked = receiveNotifications,
                         onCheckedChange = { receiveNotifications = it }
                     )
 
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = Color(0xFFF0F0F0),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
                         thickness = 1.dp
                     )
 
@@ -159,8 +154,8 @@ fun DepartmentSettingsScreen(navController: NavController) {
                     SwitchSettingRow(
                         icon = Icons.Default.Public,
                         title = "Make Office Hours Public",
-                        iconBgColor = lightGreenIconBg,
-                        iconColor = darkGreen,
+                        iconBgColor = MaterialTheme.colorScheme.primaryContainer,
+                        iconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                         isChecked = makeOfficeHoursPublic,
                         onCheckedChange = { makeOfficeHoursPublic = it }
                     )
@@ -171,4 +166,3 @@ fun DepartmentSettingsScreen(navController: NavController) {
         }
     }
 }
-
