@@ -6,3 +6,7 @@ Members/Contributors{
   Galagar, John Mark H., galagarjohnmark11@gnail.com
   Lacorte, Daryl Bench P., daryllacorte20052@gmail.com}
   
+QA Documentation Requisite:
+        In MSWord go to View then Web Layout for a pageless presentation.
+
+    
