@@ -2,7 +2,9 @@ package com.example.eldroid_teacher_side.ui.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.temporal.TemporalAdjusters
 
 object MockDataProvider {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -11,7 +13,8 @@ object MockDataProvider {
         LocalDate.now().plusDays(3),
         LocalDate.now().minusDays(2),
         LocalDate.now().plusWeeks(1).with(java.time.DayOfWeek.TUESDAY),
-        LocalDate.now().plusWeeks(1).with(java.time.DayOfWeek.THURSDAY)
+        LocalDate.now().plusWeeks(1).with(java.time.DayOfWeek.THURSDAY),
+        LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
     )
 
     data class ScheduleItem(
@@ -28,7 +31,9 @@ object MockDataProvider {
         ScheduleItem("CS202", "Data Structures & Algorithms", "01:00 PM - 02:30 PM", "Room 402", true, LocalDate.now()),
         ScheduleItem("IT101", "Introduction to Computing", "02:45 PM - 04:15 PM", "Lab B", false, LocalDate.now()),
         ScheduleItem("MATH11", "Discrete Mathematics", "09:00 AM - 10:30 AM", "Room 101", false, LocalDate.now().plusDays(1)),
-        ScheduleItem("GE105", "Ethics", "10:45 AM - 12:15 PM", "Room 205", false, LocalDate.now().plusDays(1))
+        ScheduleItem("GE105", "Ethics", "10:45 AM - 12:15 PM", "Room 205", false, LocalDate.now().plusDays(1)),
+        ScheduleItem("CS-RECAP", "Special Review Session", "09:00 AM - 12:00 PM", "Room 302", false,
+            LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.SATURDAY))),
     )
 
     val faqs = listOf(

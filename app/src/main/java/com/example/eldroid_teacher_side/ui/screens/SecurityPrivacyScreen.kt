@@ -69,7 +69,9 @@ fun SecurityPrivacyScreen(navController: NavController) {
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp).fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        IconButton(onClick = { navController.popBackStack() }) {
+                        IconButton(onClick = { if (navController.previousBackStackEntry != null) {
+                            navController.popBackStack()
+                        } }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
                         }
                         Spacer(Modifier.width(16.dp))

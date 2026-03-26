@@ -22,7 +22,9 @@ fun FAQScreen(navController: NavController) {
         navController = navController,
         showBottomBar = false, // Usually help screens don't need the main bottom bar
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { if (navController.previousBackStackEntry != null) {
+                navController.popBackStack()
+            } }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",

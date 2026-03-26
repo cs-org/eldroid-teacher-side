@@ -1,8 +1,6 @@
 package com.example.eldroid_teacher_side.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,8 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.Card
@@ -37,40 +33,64 @@ import com.example.eldroid_teacher_side.ui.screens.Credential
 fun CredentialCard(
     credential: Credential,
     iconBgColor: Color,
-    iconColor: Color,
-    onDelete: () -> Unit,
-    onEdit: () -> Unit
+    iconColor: Color
+    // [REMOVED] onDelete and onEdit parameters
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(
+            // Using surfaceVariant with low alpha for a "locked" record look
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp), // Flat design looks more official
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Icon Box
             Box(
-                modifier = Modifier.size(48.dp).clip(RoundedCornerShape(12.dp)).background(iconBgColor),
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(iconBgColor),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(imageVector = if (credential.isDegree) Icons.Outlined.School else Icons.Outlined.WorkspacePremium, contentDescription = null, tint = iconColor)
+                Icon(
+                    imageVector = if (credential.isDegree) Icons.Outlined.School else Icons.Outlined.WorkspacePremium,
+                    contentDescription = null,
+                    tint = iconColor
+                )
             }
+
             Spacer(modifier = Modifier.width(16.dp))
+
+            // Text Info - Takes up all remaining space
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = credential.title, fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                Text(
+                    text = credential.title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "${credential.institution} • ${credential.year}", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = "${credential.institution}",
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "Year: ${credential.year}",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = iconColor // Using theme color to highlight the year
+                )
             }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.height(48.dp)
-            ) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp).clickable { onEdit() })
-                Icon(Icons.Default.DeleteOutline, contentDescription = "Delete", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp).clickable { onDelete() })
-            }
+
+            // [REMOVED] The Column containing Edit and Delete icons
         }
     }
 }

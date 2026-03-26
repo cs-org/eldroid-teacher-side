@@ -38,7 +38,9 @@ fun DepartmentSettingsScreen(navController: NavController) {
         subtitle = "Manage preferences",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { if (navController.previousBackStackEntry != null) {
+                navController.popBackStack()
+            } }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },
