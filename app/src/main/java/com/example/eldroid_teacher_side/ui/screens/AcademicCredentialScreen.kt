@@ -44,7 +44,7 @@ fun AcademicCredentialScreen(navController: NavController) {
         subtitle = "Official Faculty Records",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.navigateUp() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         }

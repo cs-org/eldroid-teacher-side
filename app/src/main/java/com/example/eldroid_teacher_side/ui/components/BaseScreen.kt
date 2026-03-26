@@ -26,6 +26,8 @@ fun BaseScreen(
 ) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        // FIX: Ensure the scaffold itself has the background color
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             if (title.isNotEmpty() || subtitle.isNotEmpty()) {
                 Surface(
@@ -34,9 +36,8 @@ fun BaseScreen(
                     tonalElevation = 3.dp
                 ) {
                     Column {
-                        // Spacer for status bar/camera cutout
                         Spacer(Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                        
+
                         Row(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 12.dp)
@@ -84,7 +85,13 @@ fun BaseScreen(
         },
         contentWindowInsets = WindowInsets.systemBars,
         content = { padding ->
-            content(padding)
+            // FIX: Surface here ensures the "floor" of the screen is never white
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                content(padding)
+            }
         }
     )
 }
