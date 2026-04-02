@@ -12,7 +12,7 @@ import java.time.temporal.TemporalAdjusters
 fun generateCurrentWeek(date: LocalDate = LocalDate.now()): List<CalendarDayData> {
     val monday = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-    return (0..4).map { i ->
+    return (0..6).map { i ->
         val currentDate = monday.plusDays(i.toLong())
         CalendarDayData(
             dayName = currentDate.dayOfWeek.name.take(3),

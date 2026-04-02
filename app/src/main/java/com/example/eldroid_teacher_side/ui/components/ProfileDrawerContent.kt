@@ -97,7 +97,7 @@ fun ProfileDrawerContent(
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp)
                     ) {
-                        Text("Edit Profile", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary, fontSize = 13.sp)
+                        Text("Update Photo", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimary, fontSize = 13.sp)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Surface(
