@@ -16,28 +16,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.CredentialCard
-
-data class Credential(
-    val id: Int,
-    val title: String,
-    val institution: String,
-    val year: String,
-    val isDegree: Boolean
-)
+import com.example.eldroid_teacher_side.viewmodels.CredentialsViewModel // Import your VM
 
 @Composable
-fun AcademicCredentialScreen(navController: NavController) {
-    // Official Data (Read-Only)
-    val credentials = listOf(
-        Credential(1, "Ph.D. in Computer Science", "Stanford University", "2018", true),
-        Credential(2, "M.Sc. in Information Technology", "MIT", "2014", true),
-        Credential(3, "Certified Ethical Hacker (CEH)", "EC-Council", "2021", false)
-    )
+fun AcademicCredentialScreen(
+    navController: NavController,
+    viewModel: CredentialsViewModel = viewModel()
+) {
+    val credentials by viewModel.credentials.collectAsState()
+    val mission by viewModel.mission.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     BaseScreen(
         title = "Academic Credentials",
@@ -80,35 +75,57 @@ fun AcademicCredentialScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // CREDENTIALS LIST (Read-Only)
-            credentials.forEach { cred ->
-                CredentialCard(
-                    credential = cred,
-                    iconBgColor = MaterialTheme.colorScheme.surfaceVariant,
-                    iconColor = if (cred.isDegree) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
-                    // onDelete and onEdit are removed here
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // ACADEMIC PROFILE QUOTE CARD (Read-Only)
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-            ) {
-                Column(modifier = Modifier.padding(20.dp)) {
-                    Text("ACADEMIC MISSION", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary, letterSpacing = 1.sp)
-                    Spacer(modifier = Modifier.height(12.dp))
+            // --- LOADING OR CONTENT LOGIC ---
+            if (isLoading) {
+                // Show this while fetching from the Flask API
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp), // Height approximate to the list content
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                }
+            } else {
+                // 1. DYNAMIC CREDENTIALS LIST
+                if (credentials.isEmpty()) {
                     Text(
-                        text = "\"Dedicated to advancing the frontiers of cybersecurity through research and education.\"",
-                        fontSize = 15.sp,
-                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
-                        fontStyle = FontStyle.Italic,
-                        lineHeight = 22.sp
+                        text = "No records found.",
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                } else {
+                    credentials.forEach { cred ->
+                        CredentialCard(
+                            title = cred.degree_title,
+                            institution = cred.institution,
+                            year = cred.year_obtained,
+                            isDegree = cred.type == "degree"
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // 2. ACADEMIC PROFILE QUOTE CARD
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Column(modifier = Modifier.padding(20.dp)) {
+                        Text("ACADEMIC MISSION", fontSize = 11.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.tertiary, letterSpacing = 1.sp)
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = "\"$mission\"",
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                            fontStyle = FontStyle.Italic,
+                            lineHeight = 22.sp
+                        )
+                    }
                 }
             }
 
@@ -118,9 +135,11 @@ fun AcademicCredentialScreen(navController: NavController) {
                 text = "To update your academic records, please submit your original certificates to the HR Department.",
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

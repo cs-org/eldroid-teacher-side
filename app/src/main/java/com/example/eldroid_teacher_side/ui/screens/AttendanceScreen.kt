@@ -25,6 +25,7 @@ import com.example.eldroid_teacher_side.ui.components.AttendanceSearchBar
 import com.example.eldroid_teacher_side.ui.components.AttendanceStudentCard
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.AttendanceCalendarHeader
+import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -32,10 +33,14 @@ fun AttendanceScreen(
     navController: NavController,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    viewModel: CourseStudentsViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    val students = listOf("Chen, Samuel", "Garcia, Maria", "Reyes, Juan")
+
+    // Collect data from database
+    val selectedCourse by viewModel.selectedCourse.collectAsState()
+    val studentList by viewModel.studentGrades.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Header
@@ -91,15 +96,12 @@ fun AttendanceScreen(
         }
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Surface(
                 color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(20.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))
+                shape = RoundedCornerShape(20.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -112,8 +114,9 @@ fun AttendanceScreen(
                         tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.size(16.dp)
                     )
+                    // DYNAMIC COURSE CODE
                     Text(
-                        text = "CS202",
+                        text = selectedCourse?.course_code ?: "...",
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold
@@ -123,26 +126,29 @@ fun AttendanceScreen(
         }
 
         AttendanceCalendarHeader()
-        AttendanceSearchBar(
-            query = searchQuery,
-            onQueryChange = { searchQuery = it }
-        )
+        AttendanceSearchBar(query = searchQuery, onQueryChange = { searchQuery = it })
 
+        // DYNAMIC STUDENT COUNT
         Text(
-            text = "STUDENT LIST (${students.size})",
+            text = "STUDENT LIST (${studentList.size})",
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(students) { student ->
-                var status by remember { mutableStateOf("P") }
+            // DYNAMIC LIST FROM DATABASE
+            val filteredList = studentList.filter {
+                it.students.last_name.contains(searchQuery, ignoreCase = true) ||
+                        it.students.first_name.contains(searchQuery, ignoreCase = true)
+            }
+
+            items(filteredList) { record ->
+                var status by remember(record.id) { mutableStateOf("P") }
                 AttendanceStudentCard(
-                    name = student,
-                    studentId = "2023CS092",
+                    name = "${record.students.last_name}, ${record.students.first_name}",
+                    studentId = record.students.student_id_number,
                     imageRes = R.drawable.boy,
                     selectedStatus = status,
                     onStatusChange = { status = it }

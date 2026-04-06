@@ -15,11 +15,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
+import com.example.eldroid_teacher_side.ui.data.Course // <-- Import your data model
 
 @Composable
-fun ClassCard(onAttendanceClick: () -> Unit) {
+fun ClassCard(course: Course, onAttendanceClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -50,15 +50,17 @@ fun ClassCard(onAttendanceClick: () -> Unit) {
                     )
                 }
 
+                // DYNAMIC COURSE NAME
                 Text(
-                    text = "CS101: Computer Science I",
+                    text = "${course.course_code}: ${course.course_name}",
                     color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
                 )
 
-                ClassDetailItem(R.drawable.apartment, "Room RM 402 • Engineering Bldg")
-                ClassDetailItem(R.drawable.clock, "09:00 AM - 10:30 AM")
+                // DYNAMIC COURSE DETAILS
+                ClassDetailItem(R.drawable.apartment, course.room_assignment)
+                ClassDetailItem(R.drawable.clock, course.schedule_time)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -99,7 +101,7 @@ fun ClassDetailItem(iconId: Int, text: String) {
 }
 
 @Composable
-fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
+fun CourseCard(course: Course, onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -119,8 +121,9 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.Top
             ) {
+                // DYNAMIC COURSE NAME
                 Text(
-                    text = "CS202: Data Structures &\nAlgorithms",
+                    text = "${course.course_code}: \n${course.course_name}",
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -132,8 +135,9 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     shape = RoundedCornerShape(8.dp)
                 ) {
+                    // DYNAMIC SCHEDULE DAYS
                     Text(
-                        text = "MWF",
+                        text = course.schedule_days,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         style = MaterialTheme.typography.labelLarge.copy(
                             fontWeight = FontWeight.Bold,
@@ -144,8 +148,9 @@ fun CourseCard(onAttendanceClick: () -> Unit, onGradesClick: () -> Unit) {
             }
 
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                InfoRow(R.drawable.clock, text = "01:00 PM - 02:30 PM")
-                InfoRow(R.drawable.apartment, text = "Lab 3 • IT Building")
+                // DYNAMIC COURSE DETAILS
+                InfoRow(R.drawable.clock, text = course.schedule_time)
+                InfoRow(R.drawable.apartment, text = course.room_assignment)
             }
 
             Row(
