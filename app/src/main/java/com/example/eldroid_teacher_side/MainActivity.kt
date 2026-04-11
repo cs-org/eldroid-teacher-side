@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -27,6 +28,31 @@ import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 
+
+class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val sharedPrefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isLoggedIn = sharedPrefs.getBoolean("is_logged_in", false)
+        val startDestination = if (isLoggedIn) "main_content" else "login"
+
+        enableEdgeToEdge()
+        setContent {
+            val systemInDarkTheme = isSystemInDarkTheme()
+            var isDarkMode by remember { mutableStateOf(systemInDarkTheme) }
+
+            EldroidteachersideTheme(darkTheme = isDarkMode) {
+                MainScreen(
+                    startDestination = startDestination,
+                    isDarkMode = isDarkMode,
+                    onThemeToggle = { isDarkMode = !isDarkMode }
+                )
+            }
+        }
+    }
+}
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
