@@ -10,26 +10,31 @@ import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ClassCard
 import com.example.eldroid_teacher_side.ui.components.CourseCard
+import com.example.eldroid_teacher_side.viewmodels.DashboardViewModel // <-- Import your ViewModel
 
 @Composable
 fun DashboardScreen(
     navController: NavController,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    onNavigateToAttendance: () -> Unit,
-    onNavigateToGrades: () -> Unit,
-    onOpenDrawer: () -> Unit
+    onNavigateToAttendance: (com.example.eldroid_teacher_side.ui.data.Course) -> Unit,
+    onNavigateToGrades: (com.example.eldroid_teacher_side.ui.data.Course) -> Unit,
+    onOpenDrawer: () -> Unit,
+    viewModel: DashboardViewModel = viewModel()
 ) {
-    // FIX: The Surface provides the immediate background color.
-    // Without this, you see the white "WindowBackground" during transitions.
+    val courses by viewModel.courses.collectAsState()
+
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -82,46 +87,56 @@ fun DashboardScreen(
                 }
             }
 
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                // Featured Class Section
-                ClassCard(onAttendanceClick = onNavigateToAttendance)
-
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "My Courses",
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = "View Semester",
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
+            Column(modifier = Modifier.padding(16.dp)) {
+                if (courses.isEmpty()) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
+                } else {
+                    val featuredCourse = courses.first()
 
-                    // Course List
-                    CourseCard(
-                        onAttendanceClick = onNavigateToAttendance,
-                        onGradesClick = onNavigateToGrades
+                    // FIX: Pass the course into the lambda
+                    ClassCard(
+                        course = featuredCourse,
+                        onAttendanceClick = { onNavigateToAttendance(featuredCourse) }
                     )
-                    CourseCard(
-                        onAttendanceClick = onNavigateToAttendance,
-                        onGradesClick = onNavigateToGrades
-                    )
+
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "My Courses",
+                                fontSize = 25.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
+                            Text(
+                                text = "View Semester",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+
+                        // Course List (The rest of the courses)
+                        val remainingCourses = courses.drop(1)
+                        remainingCourses.forEach { course ->
+                            CourseCard(
+                                course = course,
+                                // FIX: Pass the course into the lambdas
+                                onAttendanceClick = { onNavigateToAttendance(course) },
+                                onGradesClick = { onNavigateToGrades(course) }
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material3.*
@@ -19,16 +18,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.SwitchSettingRow
+import com.example.eldroid_teacher_side.viewmodels.ProfileViewModel
 
 @Composable
-fun DepartmentSettingsScreen(navController: NavController) {
+fun DepartmentSettingsScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel = viewModel() // Inject ViewModel
+) {
+    // Collect the dynamic user profile state
+    val user by viewModel.userProfile.collectAsState()
+
+    // Get the first letter of the name for the avatar placeholder
+    val initial = remember(user.fullName) {
+        user.fullName.takeIf { it.isNotEmpty() }?.take(1)?.uppercase() ?: "?"
+    }
+
     // State for the functional switches
     var receiveNotifications by remember { mutableStateOf(true) }
     var makeOfficeHoursPublic by remember { mutableStateOf(true) }
@@ -38,9 +49,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
         subtitle = "Manage preferences",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { if (navController.previousBackStackEntry != null) {
-                navController.popBackStack()
-            } }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },
@@ -55,7 +64,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 1. PROFILE CARD
+            // 1. DYNAMIC PROFILE CARD
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
@@ -64,12 +73,11 @@ fun DepartmentSettingsScreen(navController: NavController) {
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     val tertiaryColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.1f)
-                    // Decorative circle
                     Canvas(modifier = Modifier.matchParentSize()) {
                         drawCircle(
                             color = tertiaryColor,
                             radius = 120f,
-                            center = Offset(size.width, 0f) // Top Right Corner
+                            center = Offset(size.width, 0f)
                         )
                     }
 
@@ -79,7 +87,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Avatar
+                        // Dynamic Initial Avatar
                         Surface(
                             shape = CircleShape,
                             color = MaterialTheme.colorScheme.primary,
@@ -87,7 +95,7 @@ fun DepartmentSettingsScreen(navController: NavController) {
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "R",
+                                    text = initial, // DYNAMIC INITIAL
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 18.sp
@@ -97,17 +105,17 @@ fun DepartmentSettingsScreen(navController: NavController) {
 
                         Spacer(modifier = Modifier.width(16.dp))
 
-                        // Text Info
+                        // DYNAMIC TEXT INFO
                         Column {
                             Text(
-                                text = "Prof. Reyes",
+                                text = user.fullName, // DYNAMIC NAME
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
-                                text = "Senior Faculty • Department of Arts",
+                                text = "${user.role} • Department of Arts", // DYNAMIC ROLE
                                 fontSize = 13.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -136,7 +144,6 @@ fun DepartmentSettingsScreen(navController: NavController) {
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Column {
-                    // Row 1: Notifications
                     SwitchSettingRow(
                         icon = Icons.Default.Notifications,
                         title = "Receive Department\nNotifications",
@@ -152,7 +159,6 @@ fun DepartmentSettingsScreen(navController: NavController) {
                         thickness = 1.dp
                     )
 
-                    // Row 2: Public Office Hours
                     SwitchSettingRow(
                         icon = Icons.Default.Public,
                         title = "Make Office Hours Public",

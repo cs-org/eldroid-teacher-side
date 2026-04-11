@@ -16,29 +16,25 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.eldroid_teacher_side.ui.data.ChatData
 import com.example.eldroid_teacher_side.ui.components.MessageUI
+import com.example.eldroid_teacher_side.viewmodels.MessageViewModel
 
 @Composable
 fun MessageScreen(
     navController: NavController,
     isDarkMode: Boolean,
     onThemeToggle: () -> Unit,
-    onOpenDrawer: () -> Unit
+    onOpenDrawer: () -> Unit,
+    viewModel: MessageViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
-
-    val directChats = listOf(
-        ChatData("Mrs. Santerna", "Andrea's Mother", "I'll be late for the pick up today.", "2 min ago", 1, true),
-        ChatData("Mr. Lacorte", "Daryl's Father", "Thank you for the update on the project.", "10:30 AM"),
-        ChatData("Mr. Amaya", "Carl's Father", "Will there be a field trip form sent home.", "Yesterday"),
-        ChatData("Mr. Carbajal", "Albert's Father", "Regarding the math homework from last n...", "Yesterday"),
-        ChatData("Mrs. Mata", "Beryl's Mother", "Thank you for the update on the project.", "10:30 AM"),
-        ChatData("Mr. Galagar", "Mark's Father", "Thank you for the update on the project.", "10:30 AM")
-    )
+    val directChats by viewModel.messages.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Column(
         modifier = Modifier
@@ -122,16 +118,39 @@ fun MessageScreen(
             )
         )
 
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(directChats.filter { it.name.contains(searchQuery, ignoreCase = true) }) { chat ->
-                MessageUI(chat = chat, onClick = {
-                    navController.navigate("chat_detail/${chat.name}/${chat.role}")
-                })
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    thickness = 0.5.dp,
-                    color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+        if (isLoading && directChats.isEmpty()) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            LazyColumn(modifier = Modifier.fillMaxSize()) {
+                val filteredChats = directChats.filter {
+                    it.name.contains(searchQuery, ignoreCase = true) ||
+                            it.role.contains(searchQuery, ignoreCase = true)
+                }
+
+                items(filteredChats) { chat ->
+                    MessageUI(chat = chat, onClick = {
+                        navController.navigate("chat_detail/${chat.name}/${chat.role}")
+                    })
+                    HorizontalDivider(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        thickness = 0.5.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
+                }
+
+                // If search returns nothing
+                if (filteredChats.isEmpty() && searchQuery.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "No messages found for '$searchQuery'",
+                            modifier = Modifier.fillMaxWidth().padding(32.dp),
+                            textAlign = TextAlign.Center,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
             }
         }
     }

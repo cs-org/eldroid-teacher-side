@@ -6,7 +6,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -37,10 +36,14 @@ import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 
 @Composable
-fun PersonalInformationScreen(navController: NavController) {
+fun PersonalInformationScreen(
+    navController: NavController,
+    viewModel: com.example.eldroid_teacher_side.viewmodels.ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     val context = LocalContext.current
+    val userProfile by viewModel.userProfile.collectAsState()
 
-    // Photo State (The only part the user can change)
+    // Photo State
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -57,9 +60,7 @@ fun PersonalInformationScreen(navController: NavController) {
         subtitle = "Official Faculty Records",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { if (navController.previousBackStackEntry != null) {
-                navController.popBackStack()
-            } }) {
+            IconButton(onClick = { navController.popBackStack() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         }
@@ -83,24 +84,19 @@ fun PersonalInformationScreen(navController: NavController) {
                     border = BorderStroke(2.dp, MaterialTheme.colorScheme.tertiary),
                     color = MaterialTheme.colorScheme.surface
                 ) {
-                    if (selectedImageUri != null) {
-                        AsyncImage(
-                            model = selectedImageUri,
-                            contentDescription = "Profile",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(id = R.drawable.professor),
-                            contentDescription = "Profile",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                    // Logic: Show selected URI if picking a new photo,
+                    // otherwise show the URL from the DB,
+                    // fallback to local professor drawable.
+                    AsyncImage(
+                        model = selectedImageUri ?: userProfile.profileImage,
+                        contentDescription = "Profile",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                        placeholder = painterResource(id = R.drawable.professor),
+                        error = painterResource(id = R.drawable.professor)
+                    )
                 }
 
-                // Camera Action
                 Surface(
                     shape = CircleShape,
                     color = MaterialTheme.colorScheme.primary,
@@ -124,9 +120,9 @@ fun PersonalInformationScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // PRIMARY INFORMATION
-            ReadOnlyInfoCard(label = "FULL NAME", value = "Prof. Reyes")
-            ReadOnlyInfoCard(label = "FACULTY ID", value = "2023-00154", isLocked = true)
+            // PRIMARY INFORMATION (DYNAMIC)
+            ReadOnlyInfoCard(label = "FULL NAME", value = userProfile.fullName)
+            ReadOnlyInfoCard(label = "FACULTY ID", value = userProfile.facultyId, isLocked = true)
 
             // CONTACT DETAILS SECTION
             Text(
@@ -142,9 +138,10 @@ fun PersonalInformationScreen(navController: NavController) {
 
             ReadOnlyInfoCard(
                 label = "EMAIL ADDRESS",
-                value = "reyes.prof@university.edu",
+                value = userProfile.email,
                 icon = Icons.Default.Email
             )
+
             ReadOnlyInfoCard(
                 label = "PHONE NUMBER",
                 value = "0917 123 4567",
@@ -158,7 +155,6 @@ fun PersonalInformationScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 4. FOOTER NOTE
             Text(
                 text = "Records are managed by the University Registrar.\nContact HR for official changes.",
                 style = MaterialTheme.typography.bodySmall,

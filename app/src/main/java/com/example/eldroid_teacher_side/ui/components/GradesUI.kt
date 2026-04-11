@@ -48,42 +48,67 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.eldroid_teacher_side.R
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import com.example.eldroid_teacher_side.ui.data.Course
 
 @Composable
-fun GradeDropDown(){
+fun GradeDropDown(
+    courses: List<Course>,
+    selectedCourse: Course?,
+    onCourseSelected: (Course) -> Unit
+){
     var expanded by remember { mutableStateOf(false) }
-    var selectedCourse by remember { mutableStateOf("CS202 - Data Structures")}
+    val displayText = selectedCourse?.let { "${it.course_code} - ${it.course_name}" } ?: "Loading courses..."
 
-    Card (
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { expanded = !expanded },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
-    ) {
-        Row(
+    // Box is required to anchor the DropdownMenu to the Card
+    Box(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Card (
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 14.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .clickable { if (courses.isNotEmpty()) expanded = !expanded },
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         ) {
-            Text (
-                text = selectedCourse,
-                color = MaterialTheme.colorScheme.primary,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
-            )
-            Icon(
-                painter = painterResource(R.drawable.k_arrow_down),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 14.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text (
+                    text = displayText,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+                Icon(
+                    painter = painterResource(R.drawable.k_arrow_down), // Make sure you have this! Alternatively use Icons.Default.ArrowDropDown
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+
+        // The actual pop-up menu!
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth(0.9f)
+        ) {
+            courses.forEach { course ->
+                DropdownMenuItem(
+                    text = { Text("${course.course_code} - ${course.course_name}") },
+                    onClick = {
+                        onCourseSelected(course)
+                        expanded = false
+                    }
+                )
+            }
         }
     }
-
 }
 
 @Composable

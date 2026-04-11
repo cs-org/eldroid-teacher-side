@@ -2,7 +2,6 @@ package com.example.eldroid_teacher_side.ui.components
 
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,14 +21,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.eldroid_teacher_side.viewmodels.ProfileViewModel
+import coil.compose.AsyncImage
 
 @Composable
 fun ProfileDrawerContent(
     navController: NavController,
     onLogout: () -> Unit,
-    onCloseDrawer: () -> Unit
+    onCloseDrawer: () -> Unit,
+    viewModel: ProfileViewModel = viewModel() // Inject Profile VM
 ) {
     val context = LocalContext.current
+    val user by viewModel.userProfile.collectAsState() // Observe user data
 
     Column(
         modifier = Modifier
@@ -54,30 +58,40 @@ fun ProfileDrawerContent(
                         shadowElevation = 4.dp,
                         color = MaterialTheme.colorScheme.surface
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.professor),
-                            contentDescription = "Profile",
+                        // UPDATED: Now uses AsyncImage to load the URL from your database
+                        AsyncImage(
+                            model = user.profileImage,
+                            contentDescription = "Profile Picture",
                             contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier.fillMaxSize(),
+                            // Fallback to the professor drawable while loading or on error
+                            placeholder = painterResource(id = R.drawable.professor),
+                            error = painterResource(id = R.drawable.professor)
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                // DYNAMIC NAME
                 Text(
-                    "Prof. Reyes",
+                    text = user.fullName,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
                 )
+
+                // DYNAMIC ROLE
                 Text(
-                    "Senior Lecturer",
+                    text = user.role,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Medium,
                     color = MaterialTheme.colorScheme.tertiary
                 )
+
+                // DYNAMIC FACULTY ID
                 Text(
-                    "Faculty ID: 2023-00154",
+                    text = "Faculty ID: ${user.facultyId}",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -107,14 +121,14 @@ fun ProfileDrawerContent(
                         onClick = {
                             val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                 type = "text/plain"
-                                putExtra(Intent.EXTRA_SUBJECT, "Faculty Profile: Prof. Reyes")
+                                putExtra(Intent.EXTRA_SUBJECT, "Faculty Profile: ${user.fullName}")
                                 val shareMessage = """
-                                    👨‍🏫 Prof. Reyes
-                                    Senior Lecturer, Department of Arts
+                                    👨‍🏫 ${user.fullName}
+                                    ${user.role}
                                     Colegio de Alicia
                                     
-                                    View my full academic profile, credentials, and book office hours here:
-                                    🔗 https://portal.colegiodealicia.edu/faculty/reyes
+                                    Email: ${user.email}
+                                    ID: ${user.facultyId}
                                 """.trimIndent()
                                 putExtra(Intent.EXTRA_TEXT, shareMessage)
                             }
