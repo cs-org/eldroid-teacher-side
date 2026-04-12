@@ -53,9 +53,10 @@ fun LoginScreen(
                 onPasswordChange = { password = it }
             )
 
+            // Change this:
             ForgotPasswordButton(
                 onForgotClick = {
-                    println("Forgot Password Clicked!")
+                    navController.navigate("request_otp") // Change from println to navigate
                 }
             )
 

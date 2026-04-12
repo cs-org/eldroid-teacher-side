@@ -51,7 +51,7 @@ fun LoginHeader(headerText: String, subText: String) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         Image(
             painter = image,
@@ -154,7 +154,7 @@ fun LoginForm(
     }
 }
 
-@Composable
+/*@Composable
 fun ForgotPasswordButton(onForgotClick: () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -170,7 +170,7 @@ fun ForgotPasswordButton(onForgotClick: () -> Unit) {
             )
         }
     }
-}
+}*/
 
 @Composable
 fun LoginActionButton(onClick: () -> Unit) {
