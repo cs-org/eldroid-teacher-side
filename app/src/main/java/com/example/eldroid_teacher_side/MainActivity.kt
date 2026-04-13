@@ -206,5 +206,10 @@ fun MainScreen(
             val role = backStackEntry.arguments?.getString("role") ?: ""
             ChatDetailScreen(navController, name, role)
         }
+
+        // Inside NavHost(navController = navController, startDestination = ...)
+        composable("request_otp") { RequestOTPScreen(navController) }
+        composable("verify_otp") { OTPVerificationScreen(navController) }
+        composable("reset_password") { ResetPasswordScreen(navController) }
     }
 }

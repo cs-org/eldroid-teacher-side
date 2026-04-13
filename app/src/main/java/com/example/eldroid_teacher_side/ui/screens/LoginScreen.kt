@@ -53,9 +53,10 @@ fun LoginScreen(
                 onPasswordChange = { password = it }
             )
 
+            // Change this:
             ForgotPasswordButton(
                 onForgotClick = {
-                    println("Forgot Password Clicked!")
+                    navController.navigate("request_otp") // Change from println to navigate
                 }
             )
 
@@ -86,8 +87,12 @@ fun LoginScreen(
 
             QuickAccessSection(
                 onBiometricClick = {
-                    // For prototype purposes, biometric just forces a success
-                    //onLoginSuccess()
+                    // Navigate to the dashboard after a successful 1-second hold
+                    navController.navigate("main_content") {
+                        // This clears the login screen from the backstack
+                        // so the user can't go "back" to login after entering
+                        popUpTo("login") { inclusive = true }
+                    }
                 }
             )
         }

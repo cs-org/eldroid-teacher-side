@@ -2,6 +2,7 @@ package com.example.eldroid_teacher_side.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,6 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlinx.coroutines.delay
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -51,7 +58,7 @@ fun LoginHeader(headerText: String, subText: String) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(80.dp))
 
         Image(
             painter = image,
@@ -154,7 +161,7 @@ fun LoginForm(
     }
 }
 
-@Composable
+/*@Composable
 fun ForgotPasswordButton(onForgotClick: () -> Unit) {
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -170,7 +177,7 @@ fun ForgotPasswordButton(onForgotClick: () -> Unit) {
             )
         }
     }
-}
+}*/
 
 @Composable
 fun LoginActionButton(onClick: () -> Unit) {
@@ -204,6 +211,9 @@ fun LoginActionButton(onClick: () -> Unit) {
 
 @Composable
 fun QuickAccessSection(onBiometricClick: () -> Unit) {
+    // State to track if the user is currently "scanning" (holding)
+    var isScanning by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     Column (
         modifier = Modifier
@@ -226,23 +236,25 @@ fun QuickAccessSection(onBiometricClick: () -> Unit) {
                 color = Color.Gray,
                 fontSize = 12.sp
             )
-
             HorizontalDivider(
                 modifier = Modifier.weight(1f),
                 thickness = 1.dp,
                 color = Color.LightGray
             )
         }
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(80.dp)
                 .drawBehind {
                     drawCircle(
-                        color = Color.LightGray,
+                        // If scanning, the circle turns green
+                        color = if (isScanning) Color(0xFF004020) else Color.LightGray,
                         style = Stroke(
-                            width = 2.dp.toPx(),
+                            width = 3.dp.toPx(),
                             pathEffect = PathEffect.dashPathEffect(
                                 intervals = floatArrayOf(10f, 10f),
                                 phase = 0f
@@ -250,20 +262,52 @@ fun QuickAccessSection(onBiometricClick: () -> Unit) {
                         )
                     )
                 }
-                .clickable { onBiometricClick() }
+                // --- BIOMETRIC HOLD LOGIC ---
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            // 1. Wait for the initial touch
+                            val down = awaitFirstDown()
+                            isScanning = true
+
+                            var holdCompleted = false
+
+                            // 2. Start a background timer for 500ms (half a second)
+                            val timerJob = scope.launch {
+                                delay(500L)
+                                holdCompleted = true
+                                onBiometricClick() // TRIGGER WHILE PRESSED
+                            }
+
+                            // 3. Watch for the finger lifting
+                            waitForUpOrCancellation()
+
+                            // 4. Cleanup: If they lift before 500ms, cancel the timer
+                            timerJob.cancel()
+                            isScanning = false
+
+                            // If it already triggered, we can break or just let it reset
+                            if (holdCompleted) break
+                        }
+                    }
+                }
         ) {
             Icon(
                 painter = painterResource(R.drawable.fingerprint),
                 contentDescription = "Biometric Login",
-                tint = Color(0xFF004020),
+                // Icon turns green when you press down
+                tint = if (isScanning) Color(0xFF004020) else Color.Gray,
                 modifier = Modifier.size(52.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(24.dp))
+
         Text(
-            text = "Touch to Sign In",
+            text = if (isScanning) "Scanning..." else "Hold to Sign In",
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = if (isScanning) Color(0xFF004020) else Color.Black
         )
 
         Text(
