@@ -2,21 +2,9 @@ package com.example.eldroid_teacher_side.ui.components
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -25,18 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Place
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,10 +27,10 @@ import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.data.CalendarDayData
 import com.example.eldroid_teacher_side.util.generateCurrentWeek
 import com.example.eldroid_teacher_side.util.generateMonth
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -83,23 +61,20 @@ fun WeeklyCalendarCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            // Header: Month Navigation
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
-                    if (isExpanded) {
-                        currentMonth = currentMonth.minusMonths(1)
-                    } else {
-                        currentWeekDate = currentWeekDate.minusWeeks(1)
-                    }
+                    if (isExpanded) currentMonth = currentMonth.minusMonths(1)
+                    else currentWeekDate = currentWeekDate.minusWeeks(1)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.k_arrow_left),
                         contentDescription = "Previous",
-                        modifier = Modifier.size(23.dp),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        modifier = Modifier.size(23.dp)
                     )
                 }
 
@@ -111,17 +86,13 @@ fun WeeklyCalendarCard(
                 )
 
                 IconButton(onClick = {
-                    if (isExpanded) {
-                        currentMonth = currentMonth.plusMonths(1)
-                    } else {
-                        currentWeekDate = currentWeekDate.plusWeeks(1)
-                    }
+                    if (isExpanded) currentMonth = currentMonth.plusMonths(1)
+                    else currentWeekDate = currentWeekDate.plusWeeks(1)
                 }) {
                     Icon(
                         painter = painterResource(R.drawable.k_arrow_right),
                         contentDescription = "Next",
-                        modifier = Modifier.size(23.dp),
-                        tint = MaterialTheme.colorScheme.onSurface
+                        modifier = Modifier.size(23.dp)
                     )
                 }
             }
@@ -129,6 +100,7 @@ fun WeeklyCalendarCard(
             Spacer(Modifier.height(16.dp))
 
             if (!isExpanded) {
+                // WEEKLY VIEW
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -137,40 +109,45 @@ fun WeeklyCalendarCard(
                         CalendarDayItem(
                             day = day.copy(hasEvent = eventDates.any { it.isEqual(day.fullDate) }),
                             isSelected = day.fullDate.isEqual(selectedDate),
-                            onDateSelected = onDateSelected
+                            onDateSelected = onDateSelected,
+                            showDayName = true
                         )
                     }
                 }
             } else {
+                // EXPANDED MONTHLY VIEW
                 Column {
+                    // Header Row for Days (Sundays in Red)
                     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        listOf("MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN").forEach {
+                        listOf("M", "T", "W", "T", "F", "S", "S").forEachIndexed { index, day ->
                             Text(
-                                text = it,
-                                fontSize = 10.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = day,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (index == 6) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.weight(1f),
                                 textAlign = TextAlign.Center
                             )
                         }
                     }
                     Spacer(Modifier.height(8.dp))
-                    
-                    Box(modifier = Modifier.height(240.dp)) {
-                        LazyVerticalGrid(
-                            columns = GridCells.Fixed(7),
-                            userScrollEnabled = false,
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(monthDays) { day ->
-                                val isCurrentMonth = YearMonth.from(day.fullDate) == currentMonth
-                                CalendarDayItem(
-                                    day = day.copy(hasEvent = eventDates.any { it.isEqual(day.fullDate) }),
-                                    isSelected = day.fullDate.isEqual(selectedDate),
-                                    onDateSelected = onDateSelected,
-                                    isDimmed = !isCurrentMonth
-                                )
-                            }
+
+                    // Fixed clipping: Using heightIn to allow dynamic expansion for the 6th row
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(7),
+                        modifier = Modifier.heightIn(max = 500.dp),
+                        userScrollEnabled = false,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(monthDays) { day ->
+                            val isCurrentMonth = YearMonth.from(day.fullDate) == currentMonth
+                            CalendarDayItem(
+                                day = day.copy(hasEvent = eventDates.any { it.isEqual(day.fullDate) }),
+                                isSelected = day.fullDate.isEqual(selectedDate),
+                                onDateSelected = onDateSelected,
+                                isDimmed = !isCurrentMonth,
+                                showDayName = false // Prevent name repetition
+                            )
                         }
                     }
                 }
@@ -185,22 +162,27 @@ fun CalendarDayItem(
     day: CalendarDayData,
     isSelected: Boolean,
     onDateSelected: (LocalDate) -> Unit,
-    isDimmed: Boolean = false
+    isDimmed: Boolean = false,
+    showDayName: Boolean = true
 ) {
+    val isSunday = day.fullDate.dayOfWeek == DayOfWeek.SUNDAY
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable { onDateSelected(day.fullDate) }
             .padding(vertical = 4.dp)
     ) {
-        if (!isDimmed) {
+        if (showDayName && !isDimmed) {
             Text(
-                text = day.dayName,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 10.sp
+                text = day.dayName.take(3).uppercase(),
+                color = if (isSunday) Color.Red else MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 10.sp,
+                fontWeight = if (isSunday) FontWeight.Bold else FontWeight.Normal
             )
+            Spacer(Modifier.height(4.dp))
         }
-        Spacer(Modifier.height(4.dp))
+
         Surface(
             shape = CircleShape,
             color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
@@ -211,10 +193,11 @@ fun CalendarDayItem(
                     text = day.dayNumber,
                     color = when {
                         isSelected -> MaterialTheme.colorScheme.onPrimary
-                        isDimmed -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
+                        isDimmed -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
+                        isSunday -> Color.Red
                         else -> MaterialTheme.colorScheme.onSurface
                     },
-                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    fontWeight = if (isSelected || isSunday) FontWeight.Bold else FontWeight.Normal,
                     fontSize = 14.sp
                 )
             }
@@ -225,9 +208,13 @@ fun CalendarDayItem(
                 Modifier
                     .padding(top = 2.dp)
                     .size(4.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape)
+                    .background(
+                        if (isSunday && !isSelected) Color.Red else MaterialTheme.colorScheme.tertiary,
+                        CircleShape
+                    )
             )
         } else {
+            // Keep spacing consistent
             Spacer(Modifier.height(6.dp))
         }
     }
@@ -274,32 +261,19 @@ fun ScheduleCard(
                     fontSize = 18.sp
                 )
 
-                Row(
-                    modifier = Modifier.padding(top = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Icon(
-                        painter = painterResource(R.drawable.clock),
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = " $time ",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Icon(
-                        imageVector = Icons.Outlined.Place,
-                        contentDescription = null,
-                        modifier = Modifier.size(14.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = " $room ",
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Senior Fix: Stacked layout for Time and Location to handle long names
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Row(
+                        modifier = Modifier.padding(top = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Icon(painter = painterResource(R.drawable.clock), contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = " $time ", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(imageVector = Icons.Outlined.Place, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(text = " $room ", fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
                 }
             }
             Icon(
