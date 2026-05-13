@@ -22,6 +22,7 @@ data class LoginRequest(
 data class LoginResponse(
     val status: String,
     val message: String,
+    val token: String?,
     val faculty_data: FacultyData? = null
 )
 
@@ -65,7 +66,8 @@ data class ParentMessage(
     val student_relation: String,
     val message_preview: String,
     val received_time: String,
-    val unread_count: Int
+    val unread_count: Int,
+    val sender_id: String
 )
 
 // Matches the 'faculty_credentials' table

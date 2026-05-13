@@ -1,5 +1,6 @@
 package com.example.eldroid_teacher_side
 
+import android.R.attr.type
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -26,6 +27,11 @@ import com.example.eldroid_teacher_side.ui.screens.*
 import com.example.eldroid_teacher_side.ui.theme.EldroidteachersideTheme
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.example.eldroid_teacher_side.network.ChatSocketHandler
+import com.example.eldroid_teacher_side.network.RetrofitClient
+import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 
 
@@ -34,8 +40,18 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        RetrofitClient.init(this)
+        val tokenManager = TokenManager(this)
+
         val sharedPrefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val isLoggedIn = sharedPrefs.getBoolean("is_logged_in", false)
+        if (isLoggedIn) {
+            tokenManager.getToken()?.let { token ->
+                ChatSocketHandler.init(token)
+                ChatSocketHandler.connect()
+            }
+        }
+
         val startDestination = if (isLoggedIn) "main_content" else "login"
 
         enableEdgeToEdge()
@@ -63,7 +79,7 @@ fun MainScreen(
     val navController = rememberNavController()
     val context = LocalContext.current
     val sharedPrefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
-
+    val tokenManger = remember { TokenManager(context) }
     // Initialize the SHARED ViewModel here
     val courseViewModel: CourseStudentsViewModel = viewModel()
 
@@ -170,7 +186,7 @@ fun MainScreen(
         }
 
         composable("login") {
-            LoginScreen(navController = navController) { userData ->
+            LoginScreen(navController = navController, tokenManger ) { userData ->
                 // SAVE TO SHARED PREFERENCES
                 sharedPrefs.edit().apply {
                     putBoolean("is_logged_in", true)
@@ -182,6 +198,11 @@ fun MainScreen(
                     apply()
                 }
 
+                tokenManger.getToken()?.let { token ->
+                    ChatSocketHandler.init(token)
+                    ChatSocketHandler.connect()
+                }
+
                 navController.navigate("main_content") {
                     popUpTo("login") { inclusive = true }
                 }
@@ -190,6 +211,7 @@ fun MainScreen(
 
         composable("profile") { ProfileScreen(navController, onLogout = {
             sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
+            tokenManger.clearToken()
             navController.navigate("login") {
                 popUpTo("main_content") { inclusive = true }
             }
@@ -201,10 +223,17 @@ fun MainScreen(
         composable("change_password") { ChangePasswordScreen(navController) }
         composable("notification") { NotificationScreen(navController) }
         composable("faq") { FAQScreen(navController = navController) }
-        composable("chat_detail/{name}/{role}") { backStackEntry ->
-            val name = backStackEntry.arguments?.getString("name") ?: ""
-            val role = backStackEntry.arguments?.getString("role") ?: ""
-            ChatDetailScreen(navController, name, role)
+        // Inside MainActivity.kt NavHost
+        composable(
+            "chat_detail/{parentName}/{receiverId}",
+            arguments = listOf(
+                navArgument("parentName") { type = NavType.StringType },
+                navArgument("receiverId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("parentName") ?: ""
+            val id = backStackEntry.arguments?.getString("receiverId") ?: ""
+            ChatDetailScreen(navController, name, id)
         }
 
         // Inside NavHost(navController = navController, startDestination = ...)

@@ -27,46 +27,51 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ChatBubble
-import com.example.eldroid_teacher_side.ui.data.MessageData
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.eldroid_teacher_side.viewmodels.ChatDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatDetailScreen(navController: NavController, parentName: String, parentRole: String) {
+fun ChatDetailScreen(
+    navController: NavController,
+    parentName: String,
+    receiverId: String,
+    viewModel: ChatDetailViewModel = viewModel()
+) {
+    // UI State
     var textState by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
 
-    // States
+    // Theme Colors (Slate & Emerald Palette)
+    val primaryGreen = Color(0xFF1B3D2F)
+    val backgroundWhite = Color.White
+
+    // Backend & Interaction State
+    val messages by viewModel.chatMessages.collectAsState()
     var showAttachSheet by remember { mutableStateOf(false) }
     var showActionSheet by remember { mutableStateOf(false) }
-    var editingMessageIndex by remember { mutableStateOf<Int?>(null) }
     var selectedMessageIndex by remember { mutableStateOf<Int?>(null) }
+    var editingMessageIndex by remember { mutableStateOf<Int?>(null) }
 
-    val messages = remember {
-        mutableStateListOf(
-            MessageData("Hello Sir, I wanted to check on progress in math...", "09:12 AM", false),
-            MessageData("Hi Ma'am! He has actually been doing great...", "09:45 AM", true, isEdited = true),
-            MessageData("That is wonderful to hear!", "10:02 AM", false),
-            MessageData("Yes, definitely.", "10:15 AM", true)
-        )
+    // Initialization: Load History & Listen to Sockets
+    LaunchedEffect(receiverId) {
+        viewModel.loadHistory(receiverId)
+        viewModel.listenForIncoming(receiverId)
+    }
+
+    // Auto-scroll on new messages
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
     }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-            messages.add(MessageData("Attachment: ${it.lastPathSegment}", currentTime, true))
-        }
-    }
-
-    // Colors to match your screenshots
-    val primaryGreen = Color(0xFF1B3D2F)
-    val backgroundWhite = Color.White
+    ) { uri: Uri? -> /* File handling logic */ }
 
     // --- 1. ATTACHMENT MENU ---
     if (showAttachSheet) {
@@ -85,18 +90,17 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 ListItem(
                     headlineContent = { Text("Documents & Files") },
                     leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = primaryGreen) },
-                    modifier = Modifier.clickable { showAttachSheet = false; filePickerLauncher.launch("application/*") }
+                    modifier = Modifier.clickable { showAttachSheet = false; filePickerLauncher.launch("application/pdf") }
                 )
             }
         }
     }
 
-    // --- 2. HORIZONTAL MESSAGE ACTION MENU (White & Green Style) ---
+    // --- 2. MESSAGE ACTION MENU ---
     if (showActionSheet) {
         ModalBottomSheet(
             onDismissRequest = { showActionSheet = false; selectedMessageIndex = null },
             containerColor = backgroundWhite,
-            dragHandle = { BottomSheetDefaults.DragHandle() },
             shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         ) {
             Row(
@@ -110,13 +114,12 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 if (isMine) {
                     ActionIconButton(icon = Icons.Default.Edit, label = "Edit", color = primaryGreen) {
                         editingMessageIndex = selectedMessageIndex
-                        textState = messages[selectedMessageIndex!!].content
+                        // FIX: Use .message (or whatever field stores your text in MessageData)
+                        textState = messages[selectedMessageIndex!!].message
                         showActionSheet = false
                     }
                 }
-
                 ActionIconButton(icon = Icons.Default.ContentCopy, label = "Copy", color = primaryGreen) { showActionSheet = false }
-                ActionIconButton(icon = Icons.Default.MoreHoriz, label = "More", color = primaryGreen) { showActionSheet = false }
             }
         }
     }
@@ -127,7 +130,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 title = {
                     Column {
                         Text(parentName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text(parentRole, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Parent", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 navigationIcon = {
@@ -138,67 +141,45 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
             )
         },
         bottomBar = {
-            Surface(tonalElevation = 20.dp, color = Color.White){
-                Column {
-                    if (editingMessageIndex != null) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth().background(primaryGreen.copy(alpha = 0.1f)).padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text("Editing message", fontSize = 12.sp, color = primaryGreen, modifier = Modifier.padding(start = 8.dp))
-                            IconButton(onClick = { editingMessageIndex = null; textState = "" }, modifier = Modifier.size(24.dp)) {
-                                Icon(Icons.Default.Close, contentDescription = null, tint = primaryGreen)
-                            }
-                        }
+            Surface(tonalElevation = 2.dp, color = backgroundWhite) {
+                Row(
+                    modifier = Modifier.padding(12.dp).fillMaxWidth().navigationBarsPadding().imePadding(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { showAttachSheet = true }) {
+                        Icon(Icons.Default.Add, contentDescription = "Attach")
                     }
 
-                    Row(
-                        modifier = Modifier.padding(12.dp).fillMaxWidth().navigationBarsPadding().imePadding(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { showAttachSheet = true }) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                        }
-
-                        OutlinedTextField(
-                            value = textState,
-                            onValueChange = { textState = it },
-                            placeholder = { Text("Type a message...", fontSize = 14.sp) },
-                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp).heightIn(min = 40.dp, max = 50.dp),
-                            shape = RoundedCornerShape(24.dp),
-                            maxLines = 5,
-                            singleLine = false,
-                            colors = OutlinedTextFieldDefaults.colors(
-                                unfocusedBorderColor = Color.Transparent,
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                            )
+                    OutlinedTextField(
+                        value = textState,
+                        onValueChange = { textState = it },
+                        placeholder = { Text("Type a message...", fontSize = 14.sp) },
+                        modifier = Modifier.weight(1f).padding(horizontal = 8.dp),
+                        shape = RoundedCornerShape(24.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedBorderColor = Color.Transparent,
+                            focusedBorderColor = Color.Transparent,
+                            unfocusedContainerColor = Color.LightGray.copy(alpha = 0.3f),
+                            focusedContainerColor = Color.LightGray.copy(alpha = 0.3f)
                         )
+                    )
 
-                        FloatingActionButton(
-                            onClick = {
-                                if (textState.isNotBlank()) {
-                                    if (editingMessageIndex != null) {
-                                        val index = editingMessageIndex!!
-                                        messages[index] = messages[index].copy(content = textState, isEdited = true)
-                                        editingMessageIndex = null
-                                    } else {
-                                        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-                                        messages.add(MessageData(textState, currentTime, true))
-                                    }
-                                    textState = ""
-                                    focusManager.clearFocus()
-                                }
-                            },
-                            containerColor = primaryGreen,
-                            contentColor = Color.White,
-                            shape = CircleShape,
-                            modifier = Modifier.size(38.dp)
-                        ) {
-                            Icon(imageVector = if (editingMessageIndex != null) Icons.Default.Check else Icons.AutoMirrored.Filled.Send, contentDescription = null)
-                        }
+                    FloatingActionButton(
+                        onClick = {
+                            if (textState.isNotBlank()) {
+                                // Logic: If editing, call update. If not, call send.
+                                viewModel.sendMessage(receiverId, textState)
+                                textState = ""
+                                editingMessageIndex = null
+                                focusManager.clearFocus()
+                            }
+                        },
+                        containerColor = primaryGreen,
+                        contentColor = Color.White,
+                        shape = CircleShape,
+                        modifier = Modifier.size(48.dp)
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", modifier = Modifier.size(20.dp))
                     }
                 }
             }
@@ -206,16 +187,26 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
     ) { padding ->
         LazyColumn(
             state = listState,
-            modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background),
+            modifier = Modifier.padding(padding).fillMaxSize().background(Color.White),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            item {
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(
+                        "CONVERSATION STARTED",
+                        fontSize = 10.sp,
+                        modifier = Modifier
+                            .background(Color.LightGray.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
             itemsIndexed(messages) { index, message ->
                 ChatBubble(
                     message = message,
                     onLongPress = {
                         selectedMessageIndex = index
-                        focusManager.clearFocus()
                         showActionSheet = true
                     }
                 )
@@ -231,7 +222,7 @@ fun ActionIconButton(icon: ImageVector, label: String, color: Color, onClick: ()
         modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { onClick() }.padding(8.dp)
     ) {
         Icon(imageVector = icon, contentDescription = label, tint = color, modifier = Modifier.size(28.dp))
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(text = label, color = color, fontSize = 12.sp, fontWeight = FontWeight.Medium)
     }
 }
