@@ -7,21 +7,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +45,7 @@ fun ChatDetailScreen(
 ) {
     var textState by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val focusManager = LocalFocusManager.current
 
     // Get live data from the ViewModel
     val messages by viewModel.chatMessages.collectAsState()
@@ -72,30 +75,16 @@ fun ChatDetailScreen(
 
     if (showSheet) {
         ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface
+            onDismissRequest = { showAttachSheet = false },
+            containerColor = backgroundWhite,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp, start = 16.dp, end = 16.dp, top = 8.dp)
-            ) {
-                Text(
-                    "Select Attachment",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp, start = 16.dp, end = 16.dp)) {
+                Text("Select Attachment", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = primaryGreen, modifier = Modifier.padding(bottom = 16.dp, start = 8.dp))
                 ListItem(
                     headlineContent = { Text("Photos & Videos") },
-                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                    modifier = Modifier.clickable {
-                        showSheet = false
-                        filePickerLauncher.launch("image/*")
-                    }
+                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = primaryGreen) },
+                    modifier = Modifier.clickable { showAttachSheet = false; filePickerLauncher.launch("image/*") }
                 )
                 ListItem(
                     headlineContent = { Text("Documents & Files") },
@@ -105,6 +94,36 @@ fun ChatDetailScreen(
                         filePickerLauncher.launch("application/pdf")
                     }
                 )
+            }
+        }
+    }
+
+    // --- 2. HORIZONTAL MESSAGE ACTION MENU (White & Green Style) ---
+    if (showActionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showActionSheet = false; selectedMessageIndex = null },
+            containerColor = backgroundWhite,
+            dragHandle = { BottomSheetDefaults.DragHandle() },
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ActionIconButton(icon = Icons.AutoMirrored.Filled.Reply, label = "Reply", color = primaryGreen) { showActionSheet = false }
+
+                val isMine = selectedMessageIndex?.let { messages[it].isFromMe } ?: false
+                if (isMine) {
+                    ActionIconButton(icon = Icons.Default.Edit, label = "Edit", color = primaryGreen) {
+                        editingMessageIndex = selectedMessageIndex
+                        textState = messages[selectedMessageIndex!!].content
+                        showActionSheet = false
+                    }
+                }
+
+                ActionIconButton(icon = Icons.Default.ContentCopy, label = "Copy", color = primaryGreen) { showActionSheet = false }
+                ActionIconButton(icon = Icons.Default.MoreHoriz, label = "More", color = primaryGreen) { showActionSheet = false }
             }
         }
     }
@@ -156,7 +175,6 @@ fun ChatDetailScreen(
                             unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                             focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
-                    )
 
                     FloatingActionButton(
                         onClick = {
@@ -179,10 +197,7 @@ fun ChatDetailScreen(
     ) { padding ->
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+            modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {

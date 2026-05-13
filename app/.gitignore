@@ -1,1 +1,18 @@
-/build
+# Gradle files
+.gradle/
+build/
+/*/build/
+
+# IntelliJ/Android Studio files
+.idea/
+*.iml
+.kotlin/
+
+# Local configuration (SDK paths, etc.)
+local.properties
+
+# Secrets (Important!)
+.secrets/
+
+# OS-specific
+.DS_Store

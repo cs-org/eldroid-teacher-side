@@ -235,5 +235,10 @@ fun MainScreen(
             val id = backStackEntry.arguments?.getString("receiverId") ?: ""
             ChatDetailScreen(navController, name, id)
         }
+
+        // Inside NavHost(navController = navController, startDestination = ...)
+        composable("request_otp") { RequestOTPScreen(navController) }
+        composable("verify_otp") { OTPVerificationScreen(navController) }
+        composable("reset_password") { ResetPasswordScreen(navController) }
     }
 }
