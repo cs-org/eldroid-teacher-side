@@ -7,21 +7,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.Reply
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AttachFile
-import androidx.compose.material.icons.filled.Photo
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,17 +38,20 @@ import java.util.*
 fun ChatDetailScreen(navController: NavController, parentName: String, parentRole: String) {
     var textState by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val focusManager = LocalFocusManager.current
 
-    // Bottom Sheet State
-    val sheetState = rememberModalBottomSheetState()
-    var showSheet by remember { mutableStateOf(false) }
+    // States
+    var showAttachSheet by remember { mutableStateOf(false) }
+    var showActionSheet by remember { mutableStateOf(false) }
+    var editingMessageIndex by remember { mutableStateOf<Int?>(null) }
+    var selectedMessageIndex by remember { mutableStateOf<Int?>(null) }
 
     val messages = remember {
         mutableStateListOf(
-            MessageData("Hello Sir, I wanted to check on my son/daughter's progress in math this week...", "09:12 AM", false),
-            MessageData("Hi Ma'am! Please don't worry. He/She has actually been doing great...", "09:45 AM", true, true),
-            MessageData("That is wonderful to hear! I'll make sure to praise his/her effort tonight...", "10:02 AM", false),
-            MessageData("Yes, definitely. They are helping him/her build confidence.", "10:15 AM", true, true)
+            MessageData("Hello Sir, I wanted to check on progress in math...", "09:12 AM", false),
+            MessageData("Hi Ma'am! He has actually been doing great...", "09:45 AM", true, isEdited = true),
+            MessageData("That is wonderful to hear!", "10:02 AM", false),
+            MessageData("Yes, definitely.", "10:15 AM", true)
         )
     }
 
@@ -55,46 +60,63 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
     ) { uri: Uri? ->
         uri?.let {
             val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-            messages.add(MessageData("Sent an attachment: ${it.lastPathSegment}", currentTime, true))
+            messages.add(MessageData("Attachment: ${it.lastPathSegment}", currentTime, true))
         }
     }
 
-    // ATTACHMENT MENU (The Bottom Sheet)
-    if (showSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { showSheet = false },
-            sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.surface
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp, start = 16.dp, end = 16.dp, top = 8.dp)
-            ) {
-                Text(
-                    "Select Attachment",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(bottom = 16.dp),
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+    // Colors to match your screenshots
+    val primaryGreen = Color(0xFF1B3D2F)
+    val backgroundWhite = Color.White
 
+    // --- 1. ATTACHMENT MENU ---
+    if (showAttachSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showAttachSheet = false },
+            containerColor = backgroundWhite,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        ) {
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp, start = 16.dp, end = 16.dp)) {
+                Text("Select Attachment", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = primaryGreen, modifier = Modifier.padding(bottom = 16.dp, start = 8.dp))
                 ListItem(
                     headlineContent = { Text("Photos & Videos") },
-                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                    modifier = Modifier.clickable {
-                        showSheet = false
-                        filePickerLauncher.launch("image/*")
-                    }
+                    leadingContent = { Icon(Icons.Default.Photo, contentDescription = null, tint = primaryGreen) },
+                    modifier = Modifier.clickable { showAttachSheet = false; filePickerLauncher.launch("image/*") }
                 )
                 ListItem(
                     headlineContent = { Text("Documents & Files") },
-                    leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                    modifier = Modifier.clickable {
-                        showSheet = false
-                        filePickerLauncher.launch("application/pdf") // or "*/*" for all files
-                    }
+                    leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = primaryGreen) },
+                    modifier = Modifier.clickable { showAttachSheet = false; filePickerLauncher.launch("application/*") }
                 )
+            }
+        }
+    }
+
+    // --- 2. HORIZONTAL MESSAGE ACTION MENU (White & Green Style) ---
+    if (showActionSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showActionSheet = false; selectedMessageIndex = null },
+            containerColor = backgroundWhite,
+            dragHandle = { BottomSheetDefaults.DragHandle() },
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp, bottom = 40.dp, start = 16.dp, end = 16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ActionIconButton(icon = Icons.AutoMirrored.Filled.Reply, label = "Reply", color = primaryGreen) { showActionSheet = false }
+
+                val isMine = selectedMessageIndex?.let { messages[it].isFromMe } ?: false
+                if (isMine) {
+                    ActionIconButton(icon = Icons.Default.Edit, label = "Edit", color = primaryGreen) {
+                        editingMessageIndex = selectedMessageIndex
+                        textState = messages[selectedMessageIndex!!].content
+                        showActionSheet = false
+                    }
+                }
+
+                ActionIconButton(icon = Icons.Default.ContentCopy, label = "Copy", color = primaryGreen) { showActionSheet = false }
+                ActionIconButton(icon = Icons.Default.MoreHoriz, label = "More", color = primaryGreen) { showActionSheet = false }
             }
         }
     }
@@ -112,64 +134,71 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                }
             )
         },
         bottomBar = {
-            Surface(
-                tonalElevation = 2.dp,
-                color = MaterialTheme.colorScheme.surface
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(12.dp)
-                        .fillMaxWidth()
-                        .navigationBarsPadding()
-                        .imePadding(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Open the Bottom Sheet instead of direct launch
-                    IconButton(onClick = { showSheet = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Attach", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Surface(tonalElevation = 20.dp, color = Color.White){
+                Column {
+                    if (editingMessageIndex != null) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().background(primaryGreen.copy(alpha = 0.1f)).padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("Editing message", fontSize = 12.sp, color = primaryGreen, modifier = Modifier.padding(start = 8.dp))
+                            IconButton(onClick = { editingMessageIndex = null; textState = "" }, modifier = Modifier.size(24.dp)) {
+                                Icon(Icons.Default.Close, contentDescription = null, tint = primaryGreen)
+                            }
+                        }
                     }
 
-                    OutlinedTextField(
-                        value = textState,
-                        onValueChange = { textState = it },
-                        placeholder = { Text("Type a message...", fontSize = 14.sp) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(horizontal = 8.dp),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            unfocusedBorderColor = Color.Transparent,
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface
-                        )
-                    )
-
-                    FloatingActionButton(
-                        onClick = {
-                            if (textState.isNotBlank()) {
-                                val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-                                messages.add(MessageData(textState, currentTime, true))
-                                textState = ""
-                            }
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        shape = CircleShape,
-                        modifier = Modifier.size(48.dp)
+                    Row(
+                        modifier = Modifier.padding(12.dp).fillMaxWidth().navigationBarsPadding().imePadding(),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send", modifier = Modifier.size(20.dp))
+                        IconButton(onClick = { showAttachSheet = true }) {
+                            Icon(Icons.Default.Add, contentDescription = null)
+                        }
+
+                        OutlinedTextField(
+                            value = textState,
+                            onValueChange = { textState = it },
+                            placeholder = { Text("Type a message...", fontSize = 14.sp) },
+                            modifier = Modifier.weight(1f).padding(horizontal = 8.dp).heightIn(min = 40.dp, max = 50.dp),
+                            shape = RoundedCornerShape(24.dp),
+                            maxLines = 5,
+                            singleLine = false,
+                            colors = OutlinedTextFieldDefaults.colors(
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
+                        )
+
+                        FloatingActionButton(
+                            onClick = {
+                                if (textState.isNotBlank()) {
+                                    if (editingMessageIndex != null) {
+                                        val index = editingMessageIndex!!
+                                        messages[index] = messages[index].copy(content = textState, isEdited = true)
+                                        editingMessageIndex = null
+                                    } else {
+                                        val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
+                                        messages.add(MessageData(textState, currentTime, true))
+                                    }
+                                    textState = ""
+                                    focusManager.clearFocus()
+                                }
+                            },
+                            containerColor = primaryGreen,
+                            contentColor = Color.White,
+                            shape = CircleShape,
+                            modifier = Modifier.size(38.dp)
+                        ) {
+                            Icon(imageVector = if (editingMessageIndex != null) Icons.Default.Check else Icons.AutoMirrored.Filled.Send, contentDescription = null)
+                        }
                     }
                 }
             }
@@ -177,34 +206,32 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
     ) { padding ->
         LazyColumn(
             state = listState,
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background),
+            modifier = Modifier.padding(padding).fillMaxSize().background(MaterialTheme.colorScheme.background),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            item {
-                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(
-                        "TODAY",
-                        fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-                }
-            }
-            items(messages) { message ->
-                ChatBubble(message)
+            itemsIndexed(messages) { index, message ->
+                ChatBubble(
+                    message = message,
+                    onLongPress = {
+                        selectedMessageIndex = index
+                        focusManager.clearFocus()
+                        showActionSheet = true
+                    }
+                )
             }
         }
+    }
+}
 
-        LaunchedEffect(messages.size) {
-            if (messages.isNotEmpty()) {
-                listState.animateScrollToItem(messages.size - 1)
-            }
-        }
+@Composable
+fun ActionIconButton(icon: ImageVector, label: String, color: Color, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clip(RoundedCornerShape(8.dp)).clickable { onClick() }.padding(8.dp)
+    ) {
+        Icon(imageVector = icon, contentDescription = label, tint = color, modifier = Modifier.size(28.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(text = label, color = color, fontSize = 12.sp, fontWeight = FontWeight.Medium)
     }
 }
