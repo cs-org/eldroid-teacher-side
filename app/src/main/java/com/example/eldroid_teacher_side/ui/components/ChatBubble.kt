@@ -18,7 +18,9 @@ import com.example.eldroid_teacher_side.ui.data.MessageData
 @Composable
 fun ChatBubble(message: MessageData) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp, horizontal = 12.dp),
         horizontalAlignment = if (message.isFromMe) Alignment.End else Alignment.Start
     ) {
         Surface(
@@ -32,14 +34,16 @@ fun ChatBubble(message: MessageData) {
             modifier = Modifier.widthIn(max = 280.dp)
         ) {
             Text(
-                text = message.content,
+                // CHANGED: Use .message instead of .content
+                text = message.message,
                 modifier = Modifier.padding(12.dp),
                 color = if (message.isFromMe) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp
             )
         }
         Text(
-            text = message.time,
+            // CHANGED: Use .created_at instead of .time (matches your MessageData class)
+            text = message.created_at,
             fontSize = 10.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
             modifier = Modifier.padding(top = 4.dp)

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.eldroid_teacher_side.ui.data.LoginRequest
 import com.example.eldroid_teacher_side.network.RetrofitClient
+import com.example.eldroid_teacher_side.network.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class LoginViewModel : ViewModel() {
     private val _loginState = MutableStateFlow<LoginState>(LoginState.Idle)
     val loginState: StateFlow<LoginState> = _loginState
 
-    fun login(facultyId: String, password: String) {
+    fun login(facultyId: String, password: String, tokenManager: TokenManager) {
         if (facultyId.isBlank() || password.isBlank()) {
             _loginState.value = LoginState.Error("Please enter both ID and password.")
             return
@@ -32,14 +33,14 @@ class LoginViewModel : ViewModel() {
 
         viewModelScope.launch {
             try {
-                val request = LoginRequest(facultyId, password)
-                val response = RetrofitClient.apiService.login(request)
+                val response = RetrofitClient.apiService.login(LoginRequest(facultyId, password))
 
                 // FIX: Pass the faculty_data into the Success state
-                if (response.status == "success" && response.faculty_data != null) {
+                if (response.status == "success" && response.token != null && response.faculty_data != null) {
+                    tokenManager.saveToken(response.token)
                     _loginState.value = LoginState.Success(data = response.faculty_data)
                 } else {
-                    _loginState.value = LoginState.Error("Unexpected response from server.")
+                    _loginState.value = LoginState.Error("Login successful, but user data is missing.")
                 }
 
             } catch (e: HttpException) {

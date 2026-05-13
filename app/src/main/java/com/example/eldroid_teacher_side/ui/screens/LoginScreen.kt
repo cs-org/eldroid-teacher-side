@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.components.*
 import com.example.eldroid_teacher_side.viewmodels.LoginState
 import com.example.eldroid_teacher_side.viewmodels.LoginViewModel
@@ -17,6 +18,7 @@ import com.example.eldroid_teacher_side.viewmodels.LoginViewModel
 @Composable
 fun LoginScreen(
     navController: NavController,
+    tokenManager: TokenManager,
     viewModel: LoginViewModel = viewModel(),
     onLoginSuccess: (com.example.eldroid_teacher_side.ui.data.FacultyData) -> Unit
 ) {
@@ -79,7 +81,7 @@ fun LoginScreen(
                 LoginActionButton(
                     onClick = {
                         // Actually send the request to the database!
-                        viewModel.login(email, password)
+                        viewModel.login(email, password, tokenManager)
                     }
                 )
             }

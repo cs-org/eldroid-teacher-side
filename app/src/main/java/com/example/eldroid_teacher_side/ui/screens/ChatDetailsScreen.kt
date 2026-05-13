@@ -25,41 +25,51 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ChatBubble
 import com.example.eldroid_teacher_side.ui.data.MessageData
+import com.example.eldroid_teacher_side.viewmodels.ChatDetailViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatDetailScreen(navController: NavController, parentName: String, parentRole: String) {
+fun ChatDetailScreen(
+    navController: NavController,
+    parentName: String,
+    receiverId: String, // Changed from parentRole to receiverId to match MainActivity
+    viewModel: ChatDetailViewModel = viewModel() // Connect your logic
+) {
     var textState by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+
+    // Get live data from the ViewModel
+    val messages by viewModel.chatMessages.collectAsState()
 
     // Bottom Sheet State
     val sheetState = rememberModalBottomSheetState()
     var showSheet by remember { mutableStateOf(false) }
 
-    val messages = remember {
-        mutableStateListOf(
-            MessageData("Hello Sir, I wanted to check on my son/daughter's progress in math this week...", "09:12 AM", false),
-            MessageData("Hi Ma'am! Please don't worry. He/She has actually been doing great...", "09:45 AM", true, true),
-            MessageData("That is wonderful to hear! I'll make sure to praise his/her effort tonight...", "10:02 AM", false),
-            MessageData("Yes, definitely. They are helping him/her build confidence.", "10:15 AM", true, true)
-        )
+    // Initialize logic: Load history and start listening for live socket updates
+    LaunchedEffect(receiverId) {
+        viewModel.loadHistory(receiverId)
+        viewModel.listenForIncoming(receiverId)
+    }
+
+    // Auto-scroll to bottom when a new message arrives
+    LaunchedEffect(messages.size) {
+        if (messages.isNotEmpty()) {
+            listState.animateScrollToItem(messages.size - 1)
+        }
     }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        uri?.let {
-            val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-            messages.add(MessageData("Sent an attachment: ${it.lastPathSegment}", currentTime, true))
-        }
+        // Handle file logic here if needed
     }
 
-    // ATTACHMENT MENU (The Bottom Sheet)
     if (showSheet) {
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
@@ -92,7 +102,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                     leadingContent = { Icon(Icons.Default.AttachFile, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
                     modifier = Modifier.clickable {
                         showSheet = false
-                        filePickerLauncher.launch("application/pdf") // or "*/*" for all files
+                        filePickerLauncher.launch("application/pdf")
                     }
                 )
             }
@@ -105,19 +115,14 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                 title = {
                     Column {
                         Text(parentName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                        Text(parentRole, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Parent", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    titleContentColor = MaterialTheme.colorScheme.onSurface,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
-                )
+                }
             )
         },
         bottomBar = {
@@ -133,7 +138,6 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                         .imePadding(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Open the Bottom Sheet instead of direct launch
                     IconButton(onClick = { showSheet = true }) {
                         Icon(Icons.Default.Add, contentDescription = "Attach", tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
@@ -147,20 +151,18 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                             .padding(horizontal = 8.dp),
                         shape = RoundedCornerShape(24.dp),
                         colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                             unfocusedBorderColor = Color.Transparent,
                             focusedBorderColor = Color.Transparent,
-                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                            focusedTextColor = MaterialTheme.colorScheme.onSurface
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
                     )
 
                     FloatingActionButton(
                         onClick = {
                             if (textState.isNotBlank()) {
-                                val currentTime = SimpleDateFormat("hh:mm a", Locale.getDefault()).format(Date())
-                                messages.add(MessageData(textState, currentTime, true))
+                                // Send via Socket/API through ViewModel
+                                viewModel.sendMessage(receiverId, textState)
                                 textState = ""
                             }
                         },
@@ -187,7 +189,7 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
             item {
                 Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(
-                        "TODAY",
+                        "CONVERSATION STARTED",
                         fontSize = 10.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier
@@ -196,14 +198,9 @@ fun ChatDetailScreen(navController: NavController, parentName: String, parentRol
                     )
                 }
             }
+            // Render actual chat bubbles from the database/socket
             items(messages) { message ->
                 ChatBubble(message)
-            }
-        }
-
-        LaunchedEffect(messages.size) {
-            if (messages.isNotEmpty()) {
-                listState.animateScrollToItem(messages.size - 1)
             }
         }
     }

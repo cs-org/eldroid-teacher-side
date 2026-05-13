@@ -129,9 +129,11 @@ fun MessageScreen(
                             it.role.contains(searchQuery, ignoreCase = true)
                 }
 
+                // Inside MessageScreen.kt
                 items(filteredChats) { chat ->
                     MessageUI(chat = chat, onClick = {
-                        navController.navigate("chat_detail/${chat.name}/${chat.role}")
+                        // Change from chat.role to chat.sender_id
+                        navController.navigate("chat_detail/${chat.name}/${chat.sender_id}")
                     })
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
