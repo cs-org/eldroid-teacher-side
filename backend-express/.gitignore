@@ -1,0 +1,32 @@
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Environment variables
+.env
+
+# --- Android / Kotlin ---
+# Build folders
+build/
+.gradle/
+captures/
+
+# Local configuration (SDK paths, etc)
+local.properties
+.bundle/
+
+# --- IDEs ---
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.iws
+
+# VS Code
+.vscode/
+
+# --- System ---
+.DS_Store
+Thumbs.db
