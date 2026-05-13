@@ -10,4 +10,6 @@ data class MessageData(
 
     // UI Helpers (Not usually sent by the server, but used by the App)
     val isFromMe: Boolean = false  // Logic: true if sender_id == current_user_id
-)
+) {
+    val isEdited: Boolean = false
+}
