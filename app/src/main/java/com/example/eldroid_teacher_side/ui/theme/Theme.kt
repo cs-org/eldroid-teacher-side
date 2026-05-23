@@ -11,12 +11,21 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+// 1. A simple class to hold the data and the toggle action
+data class ThemeState(
+    val isDarkMode: Boolean,
+    val toggleTheme: () -> Unit
+)
 
+val LocalThemeState = androidx.compose.runtime.staticCompositionLocalOf<ThemeState> {
+    error("No ThemeState provided")
+}
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
     secondary = DarkTextSecondary,

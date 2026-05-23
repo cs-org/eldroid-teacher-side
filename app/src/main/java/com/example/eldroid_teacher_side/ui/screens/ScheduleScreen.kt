@@ -22,6 +22,8 @@
     import com.example.eldroid_teacher_side.ui.components.ScheduleCard
     import com.example.eldroid_teacher_side.ui.components.WeeklyCalendarCard
     import com.example.eldroid_teacher_side.ui.data.MockDataProvider
+    import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+    import com.example.eldroid_teacher_side.util.navigateSafe
     import com.example.eldroid_teacher_side.viewmodels.ScheduleViewModel
     import java.time.LocalDate
 
@@ -29,15 +31,13 @@
     @Composable
     fun ScheduleScreen(
         navController: NavController,
-        isDarkMode: Boolean,
-        onThemeToggle: () -> Unit,
         onOpenDrawer: () -> Unit,
         viewModel: ScheduleViewModel = viewModel()
     ) {
         var selectedDate by remember { mutableStateOf(LocalDate.now()) }
         val schedules by viewModel.dailySchedule.collectAsState()
         val isLoading by viewModel.isLoading.collectAsState()
-
+        val themeState = LocalThemeState.current
         // Fetch data whenever the selectedDate changes
         LaunchedEffect(selectedDate) {
             viewModel.fetchScheduleForDate(selectedDate)
@@ -83,14 +83,14 @@
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onThemeToggle) {
+                    IconButton(onClick = { themeState.toggleTheme() }) {
                         Icon(
-                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            imageVector = if (themeState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Dark/Light Mode",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    IconButton(onClick = { navController.navigate("notification") }) {
+                    IconButton(onClick = { navController.navigateSafe("notification") }) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
                             contentDescription = "Notifications",
@@ -135,7 +135,9 @@
 
                 if (isLoading) {
                     item {
-                        Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                        Box(Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp), contentAlignment = Alignment.Center) {
                             CircularProgressIndicator()
                         }
                     }

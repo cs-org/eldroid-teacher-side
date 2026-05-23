@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.CredentialCard
+import com.example.eldroid_teacher_side.util.navigateUpSafe
 import com.example.eldroid_teacher_side.viewmodels.CredentialsViewModel // Import your VM
 
 @Composable
@@ -39,7 +40,7 @@ fun AcademicCredentialScreen(
         subtitle = "Official Faculty Records",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.navigateUp() }) {
+            IconButton(onClick = { navController.navigateUpSafe() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         }

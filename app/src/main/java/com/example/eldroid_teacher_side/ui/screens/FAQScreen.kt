@@ -13,6 +13,7 @@ import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.FAQAccordionItem
 import com.example.eldroid_teacher_side.ui.data.MockDataProvider
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 
 @Composable
 fun FAQScreen(navController: NavController) {
@@ -23,7 +24,7 @@ fun FAQScreen(navController: NavController) {
         showBottomBar = false, // Usually help screens don't need the main bottom bar
         navigationIcon = {
             IconButton(onClick = { if (navController.previousBackStackEntry != null) {
-                navController.popBackStack()
+                navController.popBackStackSafe()
             } }) {
                 Icon(
                     imageVector = Icons.Default.ArrowBack,

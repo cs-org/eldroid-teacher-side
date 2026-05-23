@@ -25,19 +25,19 @@ import com.example.eldroid_teacher_side.ui.components.AttendanceSearchBar
 import com.example.eldroid_teacher_side.ui.components.AttendanceStudentCard
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.AttendanceCalendarHeader
+import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AttendanceScreen(
     navController: NavController,
-    isDarkMode: Boolean,
-    onThemeToggle: () -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: CourseStudentsViewModel
 ) {
     var searchQuery by remember { mutableStateOf("") }
-
+    val themeState = LocalThemeState.current
     // Collect data from database
     val selectedCourse by viewModel.selectedCourse.collectAsState()
     val studentList by viewModel.studentGrades.collectAsState()
@@ -78,14 +78,14 @@ fun AttendanceScreen(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onThemeToggle) {
+                IconButton(onClick = { themeState.toggleTheme() }) {
                     Icon(
-                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        imageVector = if (themeState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                         contentDescription = "Toggle Dark/Light Mode",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                IconButton(onClick = { navController.navigate("notification") }) {
+                IconButton(onClick = { navController.navigateSafe("notification") }) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
                         contentDescription = "Notifications",
@@ -96,7 +96,9 @@ fun AttendanceScreen(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Surface(

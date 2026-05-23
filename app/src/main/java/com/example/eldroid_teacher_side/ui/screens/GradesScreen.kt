@@ -18,17 +18,19 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.*
+import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 
 @Composable
 fun GradeScreen(
     navController: NavController,
-    isDarkMode: Boolean,
-    onThemeToggle: () -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: CourseStudentsViewModel // <-- Inject ViewModel
 ){
     var searchQuery by remember { mutableStateOf("") }
+    val themeState = LocalThemeState.current
+
 
     // Collect the StateFlows from the ViewModel
     val courses by viewModel.courses.collectAsState()
@@ -71,14 +73,14 @@ fun GradeScreen(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onThemeToggle) {
+                IconButton(onClick = { themeState.toggleTheme() }) {
                     Icon(
-                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        imageVector = if (themeState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                         contentDescription = "Toggle Dark/Light Mode",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                IconButton(onClick = { navController.navigate("notification") }) {
+                IconButton(onClick = { navController.navigateSafe("notification") }) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
                         contentDescription = "Notifications",
@@ -151,7 +153,9 @@ fun GradeScreen(
 
             if (filteredStudents.isEmpty() && courses.isNotEmpty()) {
                 item {
-                    Box(modifier = Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                     }
                 }

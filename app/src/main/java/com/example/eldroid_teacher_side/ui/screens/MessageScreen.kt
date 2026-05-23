@@ -22,19 +22,21 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.MessageUI
+import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+import com.example.eldroid_teacher_side.ui.theme.ThemeState
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.MessageViewModel
 
 @Composable
 fun MessageScreen(
     navController: NavController,
-    isDarkMode: Boolean,
-    onThemeToggle: () -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: MessageViewModel = viewModel()
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val directChats by viewModel.messages.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val themeState = LocalThemeState.current
 
     Column(
         modifier = Modifier
@@ -76,14 +78,14 @@ fun MessageScreen(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onThemeToggle) {
+                IconButton(onClick = { themeState.toggleTheme() }) {
                     Icon(
-                        imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                        imageVector = if (themeState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                         contentDescription = "Toggle Dark/Light Mode",
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
-                IconButton(onClick = { navController.navigate("notification") }) {
+                IconButton(onClick = { navController.navigateSafe("notification") }) {
                     Icon(
                         imageVector = Icons.Outlined.Notifications,
                         contentDescription = "Notifications",
@@ -133,7 +135,7 @@ fun MessageScreen(
                 items(filteredChats) { chat ->
                     MessageUI(chat = chat, onClick = {
                         // Change from chat.role to chat.sender_id
-                        navController.navigate("chat_detail/${chat.name}/${chat.sender_id}")
+                        navController.navigateSafe("chat_detail/${chat.name}/${chat.sender_id}")
                     })
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -147,7 +149,9 @@ fun MessageScreen(
                     item {
                         Text(
                             text = "No messages found for '$searchQuery'",
-                            modifier = Modifier.fillMaxWidth().padding(32.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
                             textAlign = TextAlign.Center,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

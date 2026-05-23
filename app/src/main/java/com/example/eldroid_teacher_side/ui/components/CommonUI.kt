@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.eldroid_teacher_side.R
+import com.example.eldroid_teacher_side.util.navigateSafe
 
 @Composable
 fun ThemeToggleButton(
@@ -106,7 +107,7 @@ fun BottomBar(navController: NavController){
                 label = "HOME",
                 icon = Icons.Outlined.Home,
                 isSelected = currentRoute == "dashboard",
-                onClick = { navController.navigate("dashboard") }
+                onClick = { navController.navigateSafe("dashboard") }
             )
 
             // SCHEDULES
@@ -114,7 +115,7 @@ fun BottomBar(navController: NavController){
                 label = "SCHEDULES",
                 icon = Icons.Outlined.DateRange,
                 isSelected = currentRoute == "schedule",
-                onClick = { navController.navigate("schedule") }
+                onClick = { navController.navigateSafe("schedule") }
             )
 
             // GRADES
@@ -122,7 +123,7 @@ fun BottomBar(navController: NavController){
                 label = "GRADES",
                 painter = painterResource(R.drawable.grad_hat),
                 isSelected = currentRoute == "grades",
-                onClick = { navController.navigate("grades") }
+                onClick = { navController.navigateSafe("grades") }
             )
 
             // PROFILE
@@ -130,7 +131,7 @@ fun BottomBar(navController: NavController){
                 label = "PROFILE",
                 icon = Icons.Outlined.Person,
                 isSelected = currentRoute == "profile",
-                onClick = { navController.navigate("profile") }
+                onClick = { navController.navigateSafe("profile") }
             )
         }
     }

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ChatBubble
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 import com.example.eldroid_teacher_side.viewmodels.ChatDetailViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,8 +135,8 @@ fun ChatDetailScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    IconButton(onClick = { navController.popBackStackSafe() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )

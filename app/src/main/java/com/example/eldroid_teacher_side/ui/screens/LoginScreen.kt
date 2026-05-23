@@ -12,6 +12,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.components.*
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.LoginState
 import com.example.eldroid_teacher_side.viewmodels.LoginViewModel
 
@@ -58,7 +59,7 @@ fun LoginScreen(
             // Change this:
             ForgotPasswordButton(
                 onForgotClick = {
-                    navController.navigate("request_otp") // Change from println to navigate
+                    navController.navigateSafe("request_otp") // Change from println to navigate
                 }
             )
 
@@ -90,7 +91,7 @@ fun LoginScreen(
             QuickAccessSection(
                 onBiometricClick = {
                     // Navigate to the dashboard after a successful 1-second hold
-                    navController.navigate("main_content") {
+                    navController.navigateSafe("main_content") {
                         // This clears the login screen from the backstack
                         // so the user can't go "back" to login after entering
                         popUpTo("login") { inclusive = true }

@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.theme.GreenPrimary
+import com.example.eldroid_teacher_side.util.navigateSafe
 
 // --- SCREEN 1: REQUEST OTP ---
 @Composable
@@ -48,7 +49,7 @@ fun RequestOTPScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { navController.navigate("verify_otp") },
+            onClick = { navController.navigateSafe("verify_otp") },
             modifier = Modifier.fillMaxWidth().height(55.dp),
             colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
             shape = RoundedCornerShape(12.dp)
@@ -82,7 +83,7 @@ fun OTPVerificationScreen(navController: NavController) {
         }
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { navController.navigate("reset_password") },
+            onClick = { navController.navigateSafe("reset_password") },
             modifier = Modifier.fillMaxWidth().height(55.dp),
             colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
             shape = RoundedCornerShape(12.dp)
@@ -111,7 +112,7 @@ fun ResetPasswordScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(40.dp))
 
         Button(
-            onClick = { navController.navigate("login") { popUpTo("login") { inclusive = true } } },
+            onClick = { navController.navigateSafe("login") { popUpTo("login") { inclusive = true } } },
             modifier = Modifier.fillMaxWidth().height(55.dp),
             colors = ButtonDefaults.buttonColors(containerColor = GreenPrimary),
             shape = RoundedCornerShape(12.dp)

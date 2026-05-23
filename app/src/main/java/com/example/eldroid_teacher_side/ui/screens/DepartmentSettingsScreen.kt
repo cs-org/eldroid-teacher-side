@@ -25,6 +25,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.SwitchSettingRow
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 import com.example.eldroid_teacher_side.viewmodels.ProfileViewModel
 
 @Composable
@@ -49,7 +50,7 @@ fun DepartmentSettingsScreen(
         subtitle = "Manage preferences",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.popBackStackSafe() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },

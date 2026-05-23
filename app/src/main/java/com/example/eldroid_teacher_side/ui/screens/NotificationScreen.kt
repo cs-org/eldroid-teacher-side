@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
 import com.example.eldroid_teacher_side.ui.components.NotificationRow
 import com.example.eldroid_teacher_side.ui.components.SectionHeaderTitle
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 
 // Data class to hold notification data
 data class NotificationItemData(
@@ -145,7 +146,7 @@ fun NotificationScreen(navController: NavController) {
         subtitle = "Stay updated",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.popBackStackSafe() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         },

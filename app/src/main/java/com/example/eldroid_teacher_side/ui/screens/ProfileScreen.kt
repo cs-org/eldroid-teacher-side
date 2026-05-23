@@ -54,6 +54,8 @@ import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.SectionHeader
 import com.example.eldroid_teacher_side.ui.components.SettingsCard
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
+import com.example.eldroid_teacher_side.util.navigateSafe
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 
 @Composable
 fun ProfileScreen(
@@ -81,7 +83,7 @@ fun ProfileScreen(
         subtitle = "Teacher Settings",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.popBackStackSafe() }) {
                 Icon(
                     painter = painterResource(R.drawable.arrow_left),
                     contentDescription = "Back",
@@ -156,7 +158,7 @@ fun ProfileScreen(
             item {
                 Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                     Button(
-                        onClick = { navController.navigate("personal_information")},
+                        onClick = { navController.navigateSafe("personal_information")},
                         modifier = Modifier
                             .weight(1f)
                             .height(48.dp),
@@ -201,24 +203,24 @@ fun ProfileScreen(
 
             item { SectionHeader("GENERAL SETTINGS") }
             item {
-                SettingsCard("Personal Information", "Email, Phone, and Address", R.drawable.person, onClick = { navController.navigate("personal_information") })
+                SettingsCard("Personal Information", "Email, Phone, and Address", R.drawable.person, onClick = { navController.navigateSafe("personal_information") })
             }
             item {
-                SettingsCard("Academic Credentials", "Degrees, Certifications, Publications", R.drawable.grad_hat, onClick = { navController.navigate("academic_credential")})
+                SettingsCard("Academic Credentials", "Degrees, Certifications, Publications", R.drawable.grad_hat, onClick = { navController.navigateSafe("academic_credential")})
             }
             item {
-                SettingsCard("Department Settings", "Manage class assignments and office hours", R.drawable.account_balance, onClick = { navController.navigate("department_settings")})
+                SettingsCard("Department Settings", "Manage class assignments and office hours", R.drawable.account_balance, onClick = { navController.navigateSafe("department_settings")})
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item { SectionHeader("HELP & SECURITY") }
             item {
-                SettingsCard("Security & Privacy", "Password, 2FA, Session management", R.drawable.security, onClick = { navController.navigate("security_privacy")})
+                SettingsCard("Security & Privacy", "Password, 2FA, Session management", R.drawable.security, onClick = { navController.navigateSafe("security_privacy")})
             }
             item {
                 // Moved FAQ to Profile/Settings screen
-                SettingsCard("FAQs", "Frequently Asked Questions", R.drawable.ic_launcher_foreground, onClick = { navController.navigate("faq")})
+                SettingsCard("FAQs", "Frequently Asked Questions", R.drawable.ic_launcher_foreground, onClick = { navController.navigateSafe("faq")})
             }
 
             item {

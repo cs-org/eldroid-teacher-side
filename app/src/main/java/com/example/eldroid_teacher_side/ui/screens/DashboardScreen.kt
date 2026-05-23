@@ -21,19 +21,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.ClassCard
 import com.example.eldroid_teacher_side.ui.components.CourseCard
+import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.DashboardViewModel // <-- Import your ViewModel
 
 @Composable
 fun DashboardScreen(
     navController: NavController,
-    isDarkMode: Boolean,
-    onThemeToggle: () -> Unit,
-    onNavigateToAttendance: (com.example.eldroid_teacher_side.ui.data.Course) -> Unit,
+        onNavigateToAttendance: (com.example.eldroid_teacher_side.ui.data.Course) -> Unit,
     onNavigateToGrades: (com.example.eldroid_teacher_side.ui.data.Course) -> Unit,
     onOpenDrawer: () -> Unit,
     viewModel: DashboardViewModel = viewModel()
 ) {
     val courses by viewModel.courses.collectAsState()
+    val themeState = LocalThemeState.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -70,14 +71,14 @@ fun DashboardScreen(
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onThemeToggle) {
+                    IconButton(onClick = { themeState.toggleTheme() }) {
                         Icon(
-                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            imageVector = if (themeState.isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
                             contentDescription = "Toggle Dark/Light Mode",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
-                    IconButton(onClick = { navController.navigate("notification") }) {
+                    IconButton(onClick = { navController.navigateSafe("notification") }) {
                         Icon(
                             imageVector = Icons.Outlined.Notifications,
                             contentDescription = "Notifications",

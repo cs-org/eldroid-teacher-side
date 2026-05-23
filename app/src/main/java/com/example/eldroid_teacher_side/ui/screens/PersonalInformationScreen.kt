@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.eldroid_teacher_side.R
 import com.example.eldroid_teacher_side.ui.components.BaseScreen
+import com.example.eldroid_teacher_side.util.popBackStackSafe
 
 @Composable
 fun PersonalInformationScreen(
@@ -60,7 +61,7 @@ fun PersonalInformationScreen(
         subtitle = "Official Faculty Records",
         navController = navController,
         navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
+            IconButton(onClick = { navController.popBackStackSafe() }) {
                 Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.primary)
             }
         }

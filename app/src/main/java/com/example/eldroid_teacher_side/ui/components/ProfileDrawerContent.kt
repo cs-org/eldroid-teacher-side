@@ -24,6 +24,7 @@ import com.example.eldroid_teacher_side.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.eldroid_teacher_side.viewmodels.ProfileViewModel
 import coil.compose.AsyncImage
+import com.example.eldroid_teacher_side.util.navigateSafe
 
 @Composable
 fun ProfileDrawerContent(
@@ -103,7 +104,7 @@ fun ProfileDrawerContent(
                     Button(
                         onClick = {
                             onCloseDrawer()
-                            navController.navigate("personal_information")
+                            navController.navigateSafe("personal_information")
                         },
                         modifier = Modifier
                             .weight(1f)
@@ -146,19 +147,19 @@ fun ProfileDrawerContent(
             item {
                 SettingsCard("Personal Info", "Email, Phone, Address", R.drawable.person, onClick = {
                     onCloseDrawer()
-                    navController.navigate("personal_information")
+                    navController.navigateSafe("personal_information")
                 })
             }
             item {
                 SettingsCard("Academic", "Degrees, Publications", R.drawable.grad_hat, onClick = {
                     onCloseDrawer()
-                    navController.navigate("academic_credential")
+                    navController.navigateSafe("academic_credential")
                 })
             }
             item {
                 SettingsCard("Department", "Class assignments", R.drawable.account_balance, onClick = {
                     onCloseDrawer()
-                    navController.navigate("department_settings")
+                    navController.navigateSafe("department_settings")
                 })
             }
 
@@ -168,13 +169,13 @@ fun ProfileDrawerContent(
             item {
                 SettingsCard("Security", "Password, 2FA", R.drawable.security, onClick = {
                     onCloseDrawer()
-                    navController.navigate("security_privacy")
+                    navController.navigateSafe("security_privacy")
                 })
             }
             item {
                 SettingsCard("FAQs", "Questions", R.drawable.ic_launcher_foreground, onClick = {
                     onCloseDrawer()
-                    navController.navigate("faq")
+                    navController.navigateSafe("faq")
                 })
             }
 

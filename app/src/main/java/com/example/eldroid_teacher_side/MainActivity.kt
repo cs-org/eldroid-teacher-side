@@ -1,6 +1,5 @@
 package com.example.eldroid_teacher_side
 
-import android.R.attr.type
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -32,8 +31,12 @@ import androidx.navigation.navArgument
 import com.example.eldroid_teacher_side.network.ChatSocketHandler
 import com.example.eldroid_teacher_side.network.RetrofitClient
 import com.example.eldroid_teacher_side.network.TokenManager
+import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
+import com.example.eldroid_teacher_side.ui.theme.ThemeState
+import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -59,12 +62,17 @@ class MainActivity : ComponentActivity() {
             val systemInDarkTheme = isSystemInDarkTheme()
             var isDarkMode by remember { mutableStateOf(systemInDarkTheme) }
 
-            EldroidteachersideTheme(darkTheme = isDarkMode) {
-                MainScreen(
-                    startDestination = startDestination,
+            val themeState = remember(isDarkMode){
+                ThemeState(
                     isDarkMode = isDarkMode,
-                    onThemeToggle = { isDarkMode = !isDarkMode }
+                    toggleTheme = { isDarkMode = !isDarkMode }
                 )
+            }
+
+            CompositionLocalProvider(LocalThemeState provides themeState) {
+                EldroidteachersideTheme(darkTheme = LocalThemeState.current.isDarkMode) {
+                    MainScreen(startDestination = startDestination)
+                }
             }
         }
     }
@@ -72,9 +80,7 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
-    startDestination: String,
-    isDarkMode: Boolean,
-    onThemeToggle: () -> Unit
+    startDestination: String
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -106,7 +112,7 @@ fun MainScreen(
                             navController = navController,
                             onLogout = {
                                 sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
-                                navController.navigate("login") { popUpTo("main_content") { inclusive = true } }
+                                navController.navigateSafe("login") { popUpTo("main_content") { inclusive = true } }
                             },
                             onCloseDrawer = { scope.launch { drawerState.close() } }
                         )
@@ -127,16 +133,12 @@ fun MainScreen(
 
                                 "grades" -> GradeScreen(
                                     navController = navController,
-                                    isDarkMode = isDarkMode,
-                                    onThemeToggle = onThemeToggle,
                                     onOpenDrawer = { scope.launch { drawerState.open() } },
                                     viewModel = courseViewModel // Pass shared VM
                                 )
 
                                 "dashboard" -> DashboardScreen(
                                     navController = navController,
-                                    isDarkMode = isDarkMode,
-                                    onThemeToggle = onThemeToggle,
                                     onOpenDrawer = { scope.launch { drawerState.open() } },
                                     onNavigateToAttendance = { course ->
                                         // 1. Update the shared VM with the clicked course
@@ -160,21 +162,15 @@ fun MainScreen(
 
                                 "attendance" -> AttendanceScreen(
                                     navController = navController,
-                                    isDarkMode = isDarkMode,
-                                    onThemeToggle = onThemeToggle,
                                     onOpenDrawer = { scope.launch { drawerState.open() } },
                                     viewModel = courseViewModel // Pass shared VM
                                 )
                                 "messages" -> MessageScreen(
                                     navController = navController,
-                                    isDarkMode = isDarkMode,
-                                    onThemeToggle = onThemeToggle,
                                     onOpenDrawer = { scope.launch { drawerState.open() } }
                                 )
                                 "schedule" -> ScheduleScreen(
                                     navController = navController,
-                                    isDarkMode = isDarkMode,
-                                    onThemeToggle = onThemeToggle,
                                     onOpenDrawer = { scope.launch { drawerState.open() } }
                                     // viewModel will be provided automatically by the compose-viewmodel library
                                 )
@@ -203,7 +199,7 @@ fun MainScreen(
                     ChatSocketHandler.connect()
                 }
 
-                navController.navigate("main_content") {
+                navController.navigateSafe("main_content") {
                     popUpTo("login") { inclusive = true }
                 }
             }
@@ -212,7 +208,7 @@ fun MainScreen(
         composable("profile") { ProfileScreen(navController, onLogout = {
             sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
             tokenManger.clearToken()
-            navController.navigate("login") {
+            navController.navigateSafe("login") {
                 popUpTo("main_content") { inclusive = true }
             }
         }) }

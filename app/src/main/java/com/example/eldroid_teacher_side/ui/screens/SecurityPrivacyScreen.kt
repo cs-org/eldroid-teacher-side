@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.ui.components.DeviceRow
 import com.example.eldroid_teacher_side.ui.components.SecurityToggleRow
+import com.example.eldroid_teacher_side.util.navigateSafe
 import kotlinx.coroutines.launch
 
 // Simple Data Class for the simulation
@@ -140,7 +141,7 @@ fun SecurityPrivacyScreen(navController: NavController) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { navController.navigate("change_password") }
+                            .clickable { navController.navigateSafe("change_password") }
                             .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
