@@ -25,9 +25,9 @@ class MessageViewModel : ViewModel() {
     }
 
     private fun setupSocketListeners() {
-        val socket = ChatSocketHandler.getSocket()
+        // Safe access to the socket to prevent UninitializedPropertyAccessException
+        val socket = ChatSocketHandler.getSocket() ?: return
 
-        // Inside setupSocketListeners in MessageViewModel.kt
         socket.on("receive_message") { args ->
             val data = args[0] as JSONObject
 

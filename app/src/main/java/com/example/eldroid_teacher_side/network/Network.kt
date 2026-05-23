@@ -53,7 +53,8 @@ object RetrofitClient {
     private var tokenManager: TokenManager? = null
 
     fun init(context: Context) {
-        tokenManager = TokenManager(context)
+        // Use applicationContext to avoid memory leaks
+        tokenManager = TokenManager(context.applicationContext)
     }
 
     private val authInterceptor = Interceptor { chain ->
@@ -84,10 +85,12 @@ object RetrofitClient {
 }
 
 object ChatSocketHandler {
-    private lateinit var mSocket: io.socket.client.Socket
+    private var mSocket: io.socket.client.Socket? = null
     private const val SOCKET_URL = "https://eldroid-backend-express.onrender.com/"
 
     fun init(token: String) {
+        if (mSocket != null) return // Already initialized
+
         try {
             val options = io.socket.client.IO.Options().apply {
                 // Pass the same Bearer token your RetrofitClient uses
@@ -100,7 +103,16 @@ object ChatSocketHandler {
         }
     }
 
-    fun connect() = mSocket.connect()
-    fun disconnect() = mSocket.disconnect()
-    fun getSocket() = mSocket
+    fun connect() {
+        mSocket?.connect()
+    }
+
+    fun disconnect() {
+        mSocket?.disconnect()
+        mSocket = null
+    }
+
+    fun getSocket(): io.socket.client.Socket? = mSocket
+
+    fun isInitialized(): Boolean = mSocket != null
 }

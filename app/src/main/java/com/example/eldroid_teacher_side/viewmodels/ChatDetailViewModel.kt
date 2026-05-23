@@ -49,12 +49,13 @@ class ChatDetailViewModel : ViewModel() {
             put("sender_type", "faculty")
         }
         // Emit 'send_message' (matches backend socket logic)
-        ChatSocketHandler.getSocket().emit("send_message", messageObject)
+        // Use safe call ?. to prevent crashes if socket isn't initialized
+        ChatSocketHandler.getSocket()?.emit("send_message", messageObject)
     }
 
     // Inside ChatDetailViewModel.kt
     fun listenForIncoming(currentChatPartnerId: String) {
-        val socket = ChatSocketHandler.getSocket()
+        val socket = ChatSocketHandler.getSocket() ?: return
 
         // Listen for messages from the OTHER person
         socket.on("receive_message") { args ->

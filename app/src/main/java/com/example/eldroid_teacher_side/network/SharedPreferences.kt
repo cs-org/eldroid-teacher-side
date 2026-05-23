@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 
 class TokenManager(context: Context) {
     private val prefs: SharedPreferences =
-        context.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
+        context.applicationContext.getSharedPreferences("auth_prefs", Context.MODE_PRIVATE)
 
     fun saveToken(token: String) {
         prefs.edit().putString("jwt_token", token).apply()

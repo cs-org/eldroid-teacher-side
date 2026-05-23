@@ -43,16 +43,21 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        RetrofitClient.init(this)
-        val tokenManager = TokenManager(this)
+        // Use applicationContext to prevent memory leaks in singletons
+        RetrofitClient.init(applicationContext)
+        val tokenManager = TokenManager(applicationContext)
 
         val sharedPrefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPrefs.getBoolean("is_logged_in", false)
-        if (isLoggedIn) {
-            tokenManager.getToken()?.let { token ->
-                ChatSocketHandler.init(token)
-                ChatSocketHandler.connect()
-            }
+        val isLoggedInFlag = sharedPrefs.getBoolean("is_logged_in", false)
+        val token = tokenManager.getToken()
+
+        // Robust check: Only logged in if flag is true AND token exists
+        // This prevents crashes where the app thinks it's logged in but has no token for the socket
+        val isLoggedIn = isLoggedInFlag && token != null
+
+        if (isLoggedIn && token != null) {
+            ChatSocketHandler.init(token)
+            ChatSocketHandler.connect()
         }
 
         val startDestination = if (isLoggedIn) "main_content" else "login"
@@ -87,7 +92,8 @@ fun MainScreen(
     val navController = rememberNavController()
     val context = LocalContext.current
     val sharedPrefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
-    val tokenManger = remember { TokenManager(context) }
+    // Use applicationContext to prevent memory leaks
+    val tokenManger = remember { TokenManager(context.applicationContext) }
     // Initialize the SHARED ViewModel here
     val courseViewModel: CourseStudentsViewModel = viewModel()
 
@@ -114,6 +120,8 @@ fun MainScreen(
                             navController = navController,
                             onLogout = {
                                 sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
+                                // Safely disconnect socket on logout
+                                ChatSocketHandler.disconnect()
                                 navController.navigateSafe("login") { popUpTo("main_content") { inclusive = true } }
                             },
                             onCloseDrawer = { scope.launch { drawerState.close() } }
@@ -210,6 +218,8 @@ fun MainScreen(
         composable("profile") { ProfileScreen(navController, onLogout = {
             sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
             tokenManger.clearToken()
+            // Safely disconnect socket on logout
+            ChatSocketHandler.disconnect()
             navController.navigateSafe("login") {
                 popUpTo("main_content") { inclusive = true }
             }
