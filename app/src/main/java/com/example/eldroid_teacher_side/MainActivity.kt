@@ -60,7 +60,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val systemInDarkTheme = isSystemInDarkTheme()
-            var isDarkMode by remember { mutableStateOf(systemInDarkTheme) }
+            // Fix for Item #8: Use systemInDarkTheme as a key for remember
+            // so that changes in system theme automatically update our state.
+            var isDarkMode by remember(systemInDarkTheme) { mutableStateOf(systemInDarkTheme) }
 
             val themeState = remember(isDarkMode){
                 ThemeState(
