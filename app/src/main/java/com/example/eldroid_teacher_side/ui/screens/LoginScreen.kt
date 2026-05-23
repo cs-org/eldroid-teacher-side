@@ -6,12 +6,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.components.*
+import com.example.eldroid_teacher_side.util.BiometricHelper
 import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.LoginState
 import com.example.eldroid_teacher_side.viewmodels.LoginViewModel
@@ -25,6 +28,9 @@ fun LoginScreen(
 ) {
     var email by remember { mutableStateOf("") } // Used as Faculty ID
     var password by remember { mutableStateOf("") }
+    
+    val context = LocalContext.current
+    val biometricHelper = remember { BiometricHelper(context as FragmentActivity) }
 
     // Observe the login state from our ViewModel
     val loginState by viewModel.loginState.collectAsState()
@@ -90,11 +96,18 @@ fun LoginScreen(
 
             QuickAccessSection(
                 onBiometricClick = {
-                    // Navigate to the dashboard after a successful 1-second hold
-                    navController.navigateSafe("main_content") {
-                        // This clears the login screen from the backstack
-                        // so the user can't go "back" to login after entering
-                        popUpTo("login") { inclusive = true }
+                    if (biometricHelper.canAuthenticate()) {
+                        biometricHelper.showBiometricPrompt(
+                            onSuccess = {
+                                // For now, we just navigate as requested, but in a real app 
+                                // we'd need to ensure we have a token or valid session.
+                                navController.navigateSafe("main_content") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            }
+                        )
+                    } else {
+                        // Optionally show a message that biometric is not available
                     }
                 }
             )

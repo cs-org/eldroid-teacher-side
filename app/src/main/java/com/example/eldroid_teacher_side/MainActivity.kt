@@ -3,7 +3,6 @@ package com.example.eldroid_teacher_side
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
@@ -12,33 +11,32 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.*
-import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.eldroid_teacher_side.network.ChatSocketHandler
+import com.example.eldroid_teacher_side.network.RetrofitClient
+import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.components.AnimatedBottomBar
 import com.example.eldroid_teacher_side.ui.components.BottomNavItems
 import com.example.eldroid_teacher_side.ui.components.ProfileDrawerContent
 import com.example.eldroid_teacher_side.ui.screens.*
 import com.example.eldroid_teacher_side.ui.theme.EldroidteachersideTheme
-import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import com.example.eldroid_teacher_side.network.ChatSocketHandler
-import com.example.eldroid_teacher_side.network.RetrofitClient
-import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.theme.LocalThemeState
 import com.example.eldroid_teacher_side.ui.theme.ThemeState
 import com.example.eldroid_teacher_side.util.navigateSafe
 import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
 
-class MainActivity : ComponentActivity() {
+// Changed to FragmentActivity to support BiometricPrompt
+class MainActivity : FragmentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +50,6 @@ class MainActivity : ComponentActivity() {
         val token = tokenManager.getToken()
 
         // Robust check: Only logged in if flag is true AND token exists
-        // This prevents crashes where the app thinks it's logged in but has no token for the socket
         val isLoggedIn = isLoggedInFlag && token != null
 
         if (isLoggedIn && token != null) {
@@ -66,7 +63,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val systemInDarkTheme = isSystemInDarkTheme()
             // Fix for Item #8: Use systemInDarkTheme as a key for remember
-            // so that changes in system theme automatically update our state.
             var isDarkMode by remember(systemInDarkTheme) { mutableStateOf(systemInDarkTheme) }
 
             val themeState = remember(isDarkMode){
@@ -84,6 +80,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun MainScreen(
@@ -182,7 +179,6 @@ fun MainScreen(
                                 "schedule" -> ScheduleScreen(
                                     navController = navController,
                                     onOpenDrawer = { scope.launch { drawerState.open() } }
-                                    // viewModel will be provided automatically by the compose-viewmodel library
                                 )
                             }
                         }
@@ -192,14 +188,13 @@ fun MainScreen(
         }
 
         composable("login") {
-            LoginScreen(navController = navController, tokenManger ) { userData ->
+            LoginScreen(navController = navController, tokenManager = tokenManger ) { userData ->
                 // SAVE TO SHARED PREFERENCES
                 sharedPrefs.edit().apply {
                     putBoolean("is_logged_in", true)
                     putString("faculty_id", userData.facultyId)
                     putString("full_name", userData.fullName)
                     putString("email", userData.email)
-
                     putString("profile_image", userData.profileImage)
                     apply()
                 }
@@ -218,7 +213,7 @@ fun MainScreen(
         composable("profile") { ProfileScreen(navController, onLogout = {
             sharedPrefs.edit().putBoolean("is_logged_in", false).apply()
             tokenManger.clearToken()
-            // Safely disconnect socket on logout
+            // Ensure socket is disconnected on logout
             ChatSocketHandler.disconnect()
             navController.navigateSafe("login") {
                 popUpTo("main_content") { inclusive = true }
