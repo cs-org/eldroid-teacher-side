@@ -1,8 +1,8 @@
 package com.example.eldroid_teacher_side.ui.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Lock
@@ -23,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
@@ -42,14 +43,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.eldroid_teacher_side.R
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.ui.input.pointer.pointerInput
-import kotlinx.coroutines.delay
-import androidx.compose.runtime.rememberCoroutineScope
-import kotlinx.coroutines.launch
 
 
 @Composable
@@ -161,24 +155,6 @@ fun LoginForm(
     }
 }
 
-/*@Composable
-fun ForgotPasswordButton(onForgotClick: () -> Unit) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        TextButton(onClick = onForgotClick) {
-            Text(
-                text = "Forgot Password?",
-                color = Color(0xFF004020),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-        }
-    }
-}*/
-
 @Composable
 fun LoginActionButton(onClick: () -> Unit) {
     Button(
@@ -211,10 +187,6 @@ fun LoginActionButton(onClick: () -> Unit) {
 
 @Composable
 fun QuickAccessSection(onBiometricClick: () -> Unit) {
-    // State to track if the user is currently "scanning" (holding)
-    var isScanning by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
     Column (
         modifier = Modifier
             .fillMaxWidth()
@@ -251,8 +223,7 @@ fun QuickAccessSection(onBiometricClick: () -> Unit) {
                 .size(80.dp)
                 .drawBehind {
                     drawCircle(
-                        // If scanning, the circle turns green
-                        color = if (isScanning) Color(0xFF004020) else Color.LightGray,
+                        color = Color.LightGray,
                         style = Stroke(
                             width = 3.dp.toPx(),
                             pathEffect = PathEffect.dashPathEffect(
@@ -262,41 +233,13 @@ fun QuickAccessSection(onBiometricClick: () -> Unit) {
                         )
                     )
                 }
-                // --- BIOMETRIC HOLD LOGIC ---
-                .pointerInput(Unit) {
-                    awaitPointerEventScope {
-                        while (true) {
-                            // 1. Wait for the initial touch
-                            val down = awaitFirstDown()
-                            isScanning = true
-
-                            var holdCompleted = false
-
-                            // 2. Start a background timer for 500ms (half a second)
-                            val timerJob = scope.launch {
-                                delay(500L)
-                                holdCompleted = true
-                                onBiometricClick() // TRIGGER WHILE PRESSED
-                            }
-
-                            // 3. Watch for the finger lifting
-                            waitForUpOrCancellation()
-
-                            // 4. Cleanup: If they lift before 500ms, cancel the timer
-                            timerJob.cancel()
-                            isScanning = false
-
-                            // If it already triggered, we can break or just let it reset
-                            if (holdCompleted) break
-                        }
-                    }
-                }
+                .clip(CircleShape)
+                .clickable { onBiometricClick() }
         ) {
             Icon(
                 painter = painterResource(R.drawable.fingerprint),
                 contentDescription = "Biometric Login",
-                // Icon turns green when you press down
-                tint = if (isScanning) Color(0xFF004020) else Color.Gray,
+                tint = Color(0xFF004020),
                 modifier = Modifier.size(52.dp)
             )
         }
@@ -304,10 +247,10 @@ fun QuickAccessSection(onBiometricClick: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = if (isScanning) "Scanning..." else "Hold to Sign In",
+            text = "Tap to Sign In",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isScanning) Color(0xFF004020) else Color.Black
+            color = Color.Black
         )
 
         Text(

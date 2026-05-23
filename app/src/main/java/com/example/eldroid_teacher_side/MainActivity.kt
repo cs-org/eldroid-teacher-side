@@ -35,7 +35,7 @@ import com.example.eldroid_teacher_side.viewmodels.CourseStudentsViewModel
 import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// Changed to FragmentActivity to support BiometricPrompt
+// MainActivity must extend FragmentActivity for BiometricPrompt to work
 class MainActivity : FragmentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,13 +62,24 @@ class MainActivity : FragmentActivity() {
         enableEdgeToEdge()
         setContent {
             val systemInDarkTheme = isSystemInDarkTheme()
-            // Fix for Item #8: Use systemInDarkTheme as a key for remember
-            var isDarkMode by remember(systemInDarkTheme) { mutableStateOf(systemInDarkTheme) }
+            
+            // Persistence Fix: Load saved theme preference from SharedPreferences.
+            // If no preference is saved, fall back to the system theme.
+            var isDarkMode by remember { 
+                mutableStateOf(sharedPrefs.getBoolean("is_dark_mode", systemInDarkTheme)) 
+            }
 
+            // Optional: Still react to system theme changes if the user hasn't set a manual preference
+            // However, to keep it simple and respect the user's manual toggle, we update preference on toggle.
+            
             val themeState = remember(isDarkMode){
                 ThemeState(
                     isDarkMode = isDarkMode,
-                    toggleTheme = { isDarkMode = !isDarkMode }
+                    toggleTheme = { 
+                        isDarkMode = !isDarkMode 
+                        // Save the user's choice permanently
+                        sharedPrefs.edit().putBoolean("is_dark_mode", isDarkMode).apply()
+                    }
                 )
             }
 
@@ -195,6 +206,7 @@ fun MainScreen(
                     putString("faculty_id", userData.facultyId)
                     putString("full_name", userData.fullName)
                     putString("email", userData.email)
+
                     putString("profile_image", userData.profileImage)
                     apply()
                 }

@@ -1,5 +1,7 @@
 package com.example.eldroid_teacher_side.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,6 +14,7 @@ import androidx.compose.ui.unit.sp
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.eldroid_teacher_side.network.ChatSocketHandler
 import com.example.eldroid_teacher_side.network.TokenManager
 import com.example.eldroid_teacher_side.ui.components.*
 import com.example.eldroid_teacher_side.util.BiometricHelper
@@ -35,12 +38,11 @@ fun LoginScreen(
     // Observe the login state from our ViewModel
     val loginState by viewModel.loginState.collectAsState()
 
-    // This block triggers ONLY when loginState changes to Success
+    // This block triggers ONLY when loginState changes to Success (Manual Login)
     LaunchedEffect(loginState) {
-        // If the state is Success, extract the data and pass it to MainActivity
         if (loginState is LoginState.Success) {
             val userData = (loginState as LoginState.Success).data
-            onLoginSuccess(userData) // Pass the real data here!
+            onLoginSuccess(userData)
             viewModel.resetState()
         }
     }
@@ -62,10 +64,9 @@ fun LoginScreen(
                 onPasswordChange = { password = it }
             )
 
-            // Change this:
             ForgotPasswordButton(
                 onForgotClick = {
-                    navController.navigateSafe("request_otp") // Change from println to navigate
+                    navController.navigateSafe("request_otp") 
                 }
             )
 
@@ -88,7 +89,6 @@ fun LoginScreen(
             } else {
                 LoginActionButton(
                     onClick = {
-                        // Actually send the request to the database!
                         viewModel.login(email, password, tokenManager)
                     }
                 )
@@ -96,18 +96,25 @@ fun LoginScreen(
 
             QuickAccessSection(
                 onBiometricClick = {
-                    if (biometricHelper.canAuthenticate()) {
+                    val token = tokenManager.getToken()
+                    
+                    // Production Recommendation: Better feedback and state checking
+                    if (token == null) {
+                        Toast.makeText(context, "Please sign in manually first", Toast.LENGTH_LONG).show()
+                    } else if (biometricHelper.canAuthenticate()) {
                         biometricHelper.showBiometricPrompt(
                             onSuccess = {
-                                // For now, we just navigate as requested, but in a real app 
-                                // we'd need to ensure we have a token or valid session.
+                                // UX Recommendation: Friendlier message
+                                Toast.makeText(context, "Welcome back!", Toast.LENGTH_SHORT).show()
+                                
+                                // Consolidate session initialization
+                                performSessionInitialization(context, token)
+
                                 navController.navigateSafe("main_content") {
                                     popUpTo("login") { inclusive = true }
                                 }
                             }
                         )
-                    } else {
-                        // Optionally show a message that biometric is not available
                     }
                 }
             )
@@ -117,4 +124,17 @@ fun LoginScreen(
             LoginFooter()
         }
     }
+}
+
+/**
+ * Consolidates background tasks needed to start a session.
+ */
+private fun performSessionInitialization(context: Context, token: String) {
+    // 1. Mark user as logged in for the next app launch
+    val sharedPrefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    sharedPrefs.edit().putBoolean("is_logged_in", true).apply()
+
+    // 2. Initialize real-time services
+    ChatSocketHandler.init(token)
+    ChatSocketHandler.connect()
 }
